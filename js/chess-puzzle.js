@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     return a.difficulty - b.difficulty;
                 });
                 
+                // Filter puzzles to ensure they all meet the minimum threshold (500 centipawns)
+                puzzles = puzzles.filter(puzzle => puzzle.eval_change >= 500);
+                console.log(`Filtered to ${puzzles.length} puzzles with eval_change >= 500 centipawns`);
+                
                 if (puzzles.length > 0) {
                     // Show the first puzzle
                     displayPuzzle(0);
@@ -115,7 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
             gameInfo.textContent = gameInfoText;
         }
         
-        positionEval.textContent = (currentPuzzle.eval_change / 100).toFixed(1);
+        // Display eval change in pawns (divide centipawns by 100)
+        positionEval.textContent = (currentPuzzle.eval_change / 100).toFixed(1) + " pawns";
         
         // Map difficulty number to text
         const difficultyMap = {
@@ -161,12 +166,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Generate a simple explanation based on the evaluation change
         const evalChange = currentPuzzle.eval_change;
+        const evalInPawns = (evalChange / 100).toFixed(1);
         if (evalChange > 500) {
-            solutionExplanation.textContent = `This move gains a significant advantage (${(evalChange/100).toFixed(1)} pawns).`;
+            solutionExplanation.textContent = `This move turns a good position into a significant disadvantage (${evalInPawns} pawns worse).`;
         } else if (evalChange > 300) {
-            solutionExplanation.textContent = `This move wins material worth about ${(evalChange/100).toFixed(1)} pawns.`;
+            solutionExplanation.textContent = `This blunder loses material worth about ${evalInPawns} pawns from an even position.`;
         } else {
-            solutionExplanation.textContent = `This tactical move improves the position by ${(evalChange/100).toFixed(1)} pawns.`;
+            solutionExplanation.textContent = `This mistake costs ${evalInPawns} pawns from a favorable position.`;
         }
     }
     
@@ -268,13 +274,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove any existing highlights
         clearHighlightedSquares();
         
+        console.log(`Highlighting squares: from ${source} to ${target}`);
+        
         // Highlight the source and target squares
         const boardEl = document.getElementById('chess-board');
         const sourceSquare = boardEl.querySelector('.square-' + source);
         const targetSquare = boardEl.querySelector('.square-' + target);
         
-        if (sourceSquare) sourceSquare.classList.add('highlight-square');
-        if (targetSquare) targetSquare.classList.add('highlight-square');
+        if (sourceSquare) {
+            sourceSquare.classList.add('highlight-square');
+            console.log('Added highlight to source square:', sourceSquare);
+        } else {
+            console.warn('Source square not found:', source);
+        }
+        
+        if (targetSquare) {
+            targetSquare.classList.add('highlight-square');
+            console.log('Added highlight to target square:', targetSquare);
+        } else {
+            console.warn('Target square not found:', target);
+        }
         
         // Store the move
         lastMove = { from: source, to: target };
@@ -288,8 +307,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to add visual feedback on the board for correct/incorrect moves
     function addBoardFeedback(type) {
+        console.log(`Adding board feedback: ${type}`);
+        
         const boardEl = document.getElementById('chess-board');
-        if (!boardEl) return;
+        if (!boardEl) {
+            console.warn('Chess board element not found');
+            return;
+        }
         
         // Create an overlay div for the feedback
         const overlay = document.createElement('div');
@@ -312,16 +336,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 boardContainer.style.position = 'relative';
             }
             
+            console.log('Adding overlay to board container');
             // Add the overlay
             boardContainer.appendChild(overlay);
             
             // Remove the overlay after animation
             setTimeout(() => {
+                console.log('Starting fade out animation');
                 overlay.style.opacity = '0';
                 setTimeout(() => {
+                    console.log('Removing overlay');
                     overlay.remove();
                 }, 1500);
             }, 200);
+        } else {
+            console.warn('Board container not found');
         }
     }
     
@@ -330,6 +359,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the current puzzle and its solution
         const currentPuzzle = puzzles[currentPuzzleIndex];
         if (!currentPuzzle || !currentPuzzle.solution || !currentPuzzle.solution.length) return;
+        
+        console.log('Show Solution button clicked');
         
         // Show the solution container
         solutionContainer.style.display = 'block';
@@ -340,6 +371,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const target = uci.substring(2, 4);
         const promotion = uci.length > 4 ? uci.substring(4, 5) : undefined;
         
+        console.log(`Solution move: ${source} to ${target}`);
+        
         // Make the move on the chess.js instance
         const move = game.move({
             from: source,
@@ -348,6 +381,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if (move) {
+            console.log(`Move executed: ${move.san}`);
+            
             // Update the board with the new position
             board.position(game.fen());
             
@@ -359,6 +394,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show success message
             solutionMove.innerHTML = `<span class="correct-move">${move.san} ✓</span>`;
+            
+            // Add visual feedback - Green flash on the board
+            addBoardFeedback('correct');
+        } else {
+            console.warn('Failed to execute solution move');
         }
     });
     
@@ -372,4 +412,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
         displayPuzzle(newIndex);
     });
+    
+    // Add a hidden debug function to force refresh
+    window.forceRefreshPuzzles = function() {
+        console.log('Forcing cache refresh...');
+        
+        // Add a random parameter to break the cache
+        const cacheBuster = new Date().getTime();
+        const puzzleFileWithCacheBuster = `${PUZZLES_FILE}?v=${cacheBuster}`;
+        
+        console.log(`Fetching with cache buster: ${puzzleFileWithCacheBuster}`);
+        
+        fetch(puzzleFileWithCacheBuster, { cache: 'no-store' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Successfully fetched fresh data with cache busting');
+                window.location.reload(true); // Force reload from server
+            })
+            .catch(error => {
+                console.error('Error during cache busting:', error);
+                alert('Failed to refresh. Try pressing Ctrl+F5 (or Cmd+Shift+R on Mac).');
+            });
+    };
 }); 

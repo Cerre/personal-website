@@ -452,8 +452,10 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
                     if DEBUG and moves_analyzed < 3:
                         print(f"DEBUG: Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
                     
-                    # Check if move is a blunder and it was Toxima's move
-                    if is_toxima_turn and eval_change >= blunder_threshold:
+                    # Check if move is a blunder and it was Toxima's turn
+                    # A true blunder is when a player in a good/even position makes a move
+                    # that significantly worsens their position
+                    if is_toxima_turn and eval_change >= blunder_threshold and prev_eval >= 0:
                         player = "white" if toxima_color == chess.WHITE else "black"
                         blunder = {
                             "fen": prev_fen,
@@ -466,7 +468,7 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
                             "game_url": game_url
                         }
                         blunders.append(blunder)
-                        print(f"  Found blunder by {USERNAME}: move {move_number}, {san_move}, eval change: {eval_change}")
+                        print(f"  Found blunder by {USERNAME}: move {move_number}, {san_move}, eval change: {eval_change}, prev_eval: {prev_eval}, curr_eval: {curr_eval}")
                     
                     # Move to the next node
                     node = node.next()
