@@ -132,11 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         puzzleDifficulty.textContent = difficultyMap[currentPuzzle.difficulty] || "Intermediate";
         
-        // Initialize chess.js with the puzzle position
-        game = new Chess(currentPuzzle.fen);
+        // Reset solution display
+        solutionContainer.style.display = 'none';
         
-        // Update turn indicator
-        updateTurnIndicator();
+        // Clear any highlights
+        clearHighlightedSquares();
+        
+        // Initialize chess.js with the puzzle position (position before the blunder)
+        game = new Chess(currentPuzzle.fen);
         
         // Initialize or update the chessboard
         if (board === null) {
@@ -154,26 +157,106 @@ document.addEventListener('DOMContentLoaded', function() {
             board.orientation(currentPuzzle.player_color === 'white' ? 'white' : 'black');
         }
         
-        // Reset solution display
-        solutionContainer.style.display = 'none';
+        // Update turn indicator (showing whose turn it is in the initial position)
+        updateTurnIndicator();
         
-        // Clear any highlights
-        clearHighlightedSquares();
-        
-        // Convert UCI moves to SAN notation for solution display
-        const solution = uciToSan(currentPuzzle.solution[0]);
-        solutionMove.textContent = solution;
-        
-        // Generate a simple explanation based on the evaluation change
-        const evalChange = currentPuzzle.eval_change;
-        const evalInPawns = (evalChange / 100).toFixed(1);
-        if (evalChange > 500) {
-            solutionExplanation.textContent = `This move turns a good position into a significant disadvantage (${evalInPawns} pawns worse).`;
-        } else if (evalChange > 300) {
-            solutionExplanation.textContent = `This blunder loses material worth about ${evalInPawns} pawns from an even position.`;
-        } else {
-            solutionExplanation.textContent = `This mistake costs ${evalInPawns} pawns from a favorable position.`;
+        // Update puzzle instructions to show we're going to animate the blunder
+        const puzzleInfoEl = document.querySelector('.chess-puzzle-info h3');
+        if (puzzleInfoEl) {
+            puzzleInfoEl.textContent = "Watch My Blunder...";
         }
+        
+        // Disable dragging during animation using the proper API
+        board = Chessboard('chess-board', {
+            position: game.fen(),
+            draggable: false,
+            orientation: currentPuzzle.player_color === 'white' ? 'white' : 'black',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd,
+            pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg'
+        });
+        
+        // After a short delay, animate Toxima's blunder move
+        setTimeout(() => {
+            // Extract the blundered move from the puzzle data
+            const blunderedMove = currentPuzzle.blundered_move;
+            console.log(`Animating blundered move: ${blunderedMove}`);
+            
+            // Make the blundered move in the chess.js game
+            let move;
+            try {
+                // Try to make the move using SAN notation
+                move = game.move(blunderedMove);
+            } catch (e) {
+                console.error('Error making blundered move:', e);
+                // Fallback approach - try to find the move
+                const moves = game.moves({ verbose: true });
+                const moveObj = moves.find(m => game.san(m) === blunderedMove);
+                if (moveObj) {
+                    move = game.move(moveObj);
+                }
+            }
+            
+            if (move) {
+                // Highlight and animate the blundered move
+                highlightSquares(move.from, move.to);
+                board.position(game.fen(), true); // true enables animation
+                
+                // Update the turn indicator after the blunder
+                updateTurnIndicator();
+                
+                // After the animation completes, allow the user to solve the puzzle
+                setTimeout(() => {
+                    // Update puzzle instructions
+                    if (puzzleInfoEl) {
+                        puzzleInfoEl.textContent = "Now Find the Best Response!";
+                    }
+                    
+                    // Re-enable dragging with the proper API
+                    board = Chessboard('chess-board', {
+                        position: game.fen(),
+                        draggable: true,
+                        orientation: currentPuzzle.player_color === 'white' ? 'white' : 'black',
+                        onDragStart: onDragStart,
+                        onDrop: onDrop,
+                        onSnapEnd: onSnapEnd,
+                        pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg'
+                    });
+                    
+                    // Convert UCI moves to SAN notation for solution display
+                    const solution = uciToSan(currentPuzzle.solution[0]);
+                    solutionMove.textContent = solution;
+                    
+                    // Generate a simple explanation based on the evaluation change
+                    const evalChange = currentPuzzle.eval_change;
+                    const evalInPawns = (evalChange / 100).toFixed(1);
+                    if (evalChange > 500) {
+                        solutionExplanation.textContent = `This move turns a good position into a significant disadvantage (${evalInPawns} pawns worse).`;
+                    } else if (evalChange > 300) {
+                        solutionExplanation.textContent = `This blunder loses material worth about ${evalInPawns} pawns from an even position.`;
+                    } else {
+                        solutionExplanation.textContent = `This mistake costs ${evalInPawns} pawns from a favorable position.`;
+                    }
+                }, 1500); // Delay after animation
+            } else {
+                console.error(`Failed to make blundered move: ${blunderedMove}`);
+                // If we can't make the move, just proceed to the solving phase
+                if (puzzleInfoEl) {
+                    puzzleInfoEl.textContent = "Find the Best Move!";
+                }
+                // Re-enable dragging with the proper API
+                board = Chessboard('chess-board', {
+                    position: game.fen(),
+                    draggable: true,
+                    orientation: currentPuzzle.player_color === 'white' ? 'white' : 'black',
+                    onDragStart: onDragStart,
+                    onDrop: onDrop,
+                    onSnapEnd: onSnapEnd,
+                    pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg'
+                });
+            }
+        }, 1000); // Initial delay before animation
     }
     
     function uciToSan(uci) {
@@ -230,6 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPuzzle = puzzles[currentPuzzleIndex];
         const userMoveUci = source + target + (move.promotion || '');
         
+        // Compare with the correct solution
         if (userMoveUci === currentPuzzle.solution[0]) {
             // Show success message and solution
             solutionContainer.style.display = 'block';
