@@ -21,8 +21,45 @@
     <section class="about container">
         <h2>About Me</h2>
         <p>Hello! I'm a Python developer specializing in computer vision, large language models (LLMs), and machine learning. I enjoy solving complex problems and developing AI solutions that make a real-world impact.</p>
-        <p>With extensive experience in Python programming, I build robust data pipelines, ML models, and AI applications that address challenging real-world problems.</p>
-        <p>Feel free to explore my work and get in touch if you'd like to collaborate on a project!</p>
+        <p>Throughout my career, I've built robust data pipelines, trained sophisticated ML models, and created AI applications that tackle challenging real-world problems. My approach combines technical expertise with a focus on practical, impactful solutions.</p>
+        <p>Feel free to explore my projects and get in touch if you'd like to collaborate!</p>
+    </section>
+
+    <section class="chess-puzzle container">
+        <h2>Chess Puzzle Challenge</h2>
+        <div class="chess-puzzle-container">
+            <div class="chess-board-container">
+                <div id="chess-board" class="chess-board">
+                    <!-- Chess board will be rendered here by JavaScript -->
+                    <div class="chess-board-placeholder">
+                        <i class="fas fa-chess-knight"></i>
+                        <p>Loading my latest blunder...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chess-puzzle-info">
+                <h3>Can You Find the Best Move?</h3>
+                <p>This position comes from my latest chess blunder. Can you find what I missed?</p>
+                <div class="puzzle-details">
+                    <p><strong>Game:</strong> <span id="game-info">Rapid match on Chess.com</span></p>
+                    <p><strong>Position Evaluation:</strong> <span id="position-eval">-3.2</span></p>
+                    <p><strong>Difficulty:</strong> <span id="puzzle-difficulty">Intermediate</span></p>
+                </div>
+                <div class="puzzle-controls">
+                    <button id="show-solution" class="btn btn-primary">Show Solution</button>
+                    <button id="try-another" class="btn btn-secondary">Try Another</button>
+                </div>
+                <div id="solution-container" class="solution-container" style="display: none;">
+                    <h4>Solution</h4>
+                    <p id="solution-move">Qh4+ followed by Qxf2#</p>
+                    <p id="solution-explanation">This tactical sequence leads to checkmate in 2 moves. The queen sacrifice opens up the king position.</p>
+                </div>
+            </div>
+        </div>
+        <div class="puzzle-footer">
+            <p>Powered by a custom Python backend that analyzes my games using the Chess.com API and Stockfish engine</p>
+            <a href="https://github.com/Cerre/chess-blunder-api" target="_blank" class="api-link">View the API code <i class="fab fa-github"></i></a>
+        </div>
     </section>
 
     <section class="social container">
@@ -85,7 +122,7 @@
                             <strong>Challenge:</strong> Improve accuracy of finger detection in challenging conditions like low lighting and unusual hand orientations while maintaining computational efficiency.
                         </div>
                         <div class="approach">
-                            <strong>Approach:</strong> Gathered targeted dataset across various conditions, engineered specific features, trained an XGBoost model, and optimized the system for real-time performance.
+                            <strong>Approach:</strong> Gathered targeted dataset across various conditions, engineered specific features, trained an XGBoost model, and optimized the system for domain-specific applications.
                         </div>
                         <div class="insights">
                             <strong>Technical Insights:</strong> Rotation invariant features significantly improved detection reliability. Thorough data cleaning and inspection was essential for effective feature engineering.
@@ -127,5 +164,6 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/chess-puzzle.js"></script>
 </body>
 </html> 
