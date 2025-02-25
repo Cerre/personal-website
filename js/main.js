@@ -1,7 +1,7 @@
 // Update copyright year
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Optional: Add smooth scrolling for navigation (if you add navigation links later)
+// Add smooth scrolling for navigation
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -11,42 +11,133 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Optional: Simple animation on scroll - make elements fade in as they come into view
+// Enhanced animations on scroll and page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Add this class to any element you want to animate
+    // Elements to animate
     const animatedElements = document.querySelectorAll('.project-card, .social-link');
+    const headerElements = document.querySelectorAll('.name, .tagline');
+    const sectionHeadings = document.querySelectorAll('section h2');
     
-    // Simple check if element is in viewport
-    const isInViewport = (el) => {
+    // Enhanced check if element is in viewport with offset
+    const isInViewport = (el, offset = 0) => {
         const rect = el.getBoundingClientRect();
         return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            rect.top <= (window.innerHeight || document.documentElement.clientHeight) - offset &&
+            rect.bottom >= 0 &&
+            rect.left <= (window.innerWidth || document.documentElement.clientWidth) &&
+            rect.right >= 0
         );
     };
     
-    // Apply initial state
+    // Apply initial states
     animatedElements.forEach(el => {
         el.style.opacity = "0";
-        el.style.transform = "translateY(20px)";
-        el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        el.style.transform = "translateY(30px)";
+        el.style.transition = "opacity 0.7s ease, transform 0.7s ease";
     });
     
-    // Function to check if elements are in viewport and animate them
+    sectionHeadings.forEach(el => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(20px)";
+        el.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+    });
+    
+    // Staggered animation for header elements
+    headerElements.forEach((el, index) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(20px)";
+        el.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+        
+        // Staggered delay
+        setTimeout(() => {
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0)";
+        }, 300 + (index * 200));
+    });
+    
+    // Function to animate elements when they enter viewport
     const animateOnScroll = () => {
-        animatedElements.forEach(el => {
-            if (isInViewport(el)) {
+        // Animate section headings
+        sectionHeadings.forEach(el => {
+            if (isInViewport(el, 100)) {
                 el.style.opacity = "1";
                 el.style.transform = "translateY(0)";
             }
         });
+        
+        // Animate project cards and social links with staggered effect
+        let delay = 0;
+        animatedElements.forEach(el => {
+            if (isInViewport(el, 150)) {
+                setTimeout(() => {
+                    el.style.opacity = "1";
+                    el.style.transform = "translateY(0)";
+                }, delay);
+                delay += 100; // Increase delay for next element
+            }
+        });
     };
     
-    // Run once on load
+    // Add hover effects for project cards
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = "translateY(-10px) scale(1.02)";
+            this.style.boxShadow = "0 15px 30px rgba(0, 0, 0, 0.4)";
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = "translateY(0) scale(1)";
+            this.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
+        });
+    });
+    
+    // Add interactive effects for social links
+    document.querySelectorAll('.social-link').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.transform = "translateY(-8px) scale(1.05)";
+            this.style.boxShadow = "0 12px 25px rgba(0, 0, 0, 0.4)";
+            // Find the icon and add pulse effect
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.style.transform = "scale(1.1)";
+                icon.style.transition = "transform 0.3s ease";
+            }
+        });
+        
+        link.addEventListener('mouseleave', function() {
+            this.style.transform = "translateY(0) scale(1)";
+            this.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
+            // Reset icon
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.style.transform = "scale(1)";
+            }
+        });
+    });
+    
+    // Run animations on page load
     animateOnScroll();
     
-    // Run on scroll
+    // Run animations on scroll
     window.addEventListener('scroll', animateOnScroll);
+    
+    // Optional: Add typing effect to the name (uncomment to enable)
+    /*
+    const nameElement = document.querySelector('.name');
+    if (nameElement) {
+        const name = nameElement.textContent;
+        nameElement.textContent = '';
+        nameElement.style.opacity = "1";
+        
+        let i = 0;
+        const typeEffect = setInterval(() => {
+            if (i < name.length) {
+                nameElement.textContent += name.charAt(i);
+                i++;
+            } else {
+                clearInterval(typeEffect);
+            }
+        }, 100);
+    }
+    */
 }); 
