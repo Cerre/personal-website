@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket League Video Search API - Filip Cederquist</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project-detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="name">Filip Cederquist</h1>
+            <p class="tagline">Computer Vision | LLMs | Machine Learning</p>
+        </div>
+    </header>
+    
+    <nav class="project-nav container">
+        <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to All Projects</a>
+    </nav>
+
+    <article class="project-detail container">
+        <header class="project-header">
+            <h1>Rocket League Video Search API</h1>
+            <div class="project-meta">
+                <span class="project-tag">Computer Vision</span>
+                <span class="project-tag">Machine Learning</span>
+                <span class="project-tag">API Development</span>
+            </div>
+            <div class="project-links">
+                <a href="#" target="_blank" class="github-link"><i class="fab fa-github"></i> GitHub Repository</a>
+                <a href="#" target="_blank" class="demo-link"><i class="fas fa-external-link-alt"></i> Live Demo</a>
+            </div>
+        </header>
+
+        <section class="project-section">
+            <h2>Problem Statement</h2>
+            <p>In the competitive gaming world of Rocket League, players and coaches need to review gameplay to improve strategies and techniques. However, manually searching through hours of video for specific game moments (like goals, saves, or special moves) is time-consuming and inefficient.</p>
+            <p>The challenge was to build a system that could automatically detect, categorize, and make searchable these key moments from Rocket League gameplay videos, allowing users to quickly find relevant clips based on specific actions or events.</p>
+        </section>
+
+        <section class="project-section">
+            <h2>Technical Approach</h2>
+            <p>The solution I built consists of several interconnected components:</p>
+            
+            <h3>1. Video Processing Pipeline</h3>
+            <p>I developed a processing pipeline that breaks down gameplay videos into individual frames for analysis. This pipeline handles videos of various resolutions and frame rates, ensuring consistent processing regardless of the source quality.</p>
+            
+            <h3>2. Computer Vision Model</h3>
+            <p>At the core of the system is a custom-trained computer vision model that can recognize various game elements and actions:</p>
+            <ul>
+                <li>Ball position and trajectory tracking</li>
+                <li>Vehicle identification and tracking</li>
+                <li>Game state detection (score, time, boost levels)</li>
+                <li>Action classification (goals, saves, demos, aerials)</li>
+            </ul>
+            <p>The model uses a combination of object detection techniques and action recognition algorithms, optimized for the unique visual characteristics of Rocket League.</p>
+            
+            <h3>3. Metadata Extraction and Indexing</h3>
+            <p>Beyond visual data, the system extracts contextual metadata such as:</p>
+            <ul>
+                <li>Game score at moment of event</li>
+                <li>Player positions and involvement</li>
+                <li>Game time of events</li>
+                <li>Match information</li>
+            </ul>
+            <p>This metadata is structured and indexed to enable powerful search functionality.</p>
+            
+            <h3>4. Search API</h3>
+            <p>The frontend API allows users to search through processed videos using various parameters. Search results include timestamps, preview images, and direct links to the specific moments.</p>
+        </section>
+
+        <section class="project-section">
+            <h2>Technical Challenges</h2>
+            
+            <h3>Challenge 1: Frame Detection Accuracy</h3>
+            <p>Initial implementations struggled with accurately detecting fast-moving objects in the game due to motion blur and the game's rapid pace.</p>
+            <p><strong>Solution:</strong> I implemented a temporal analysis approach that considers sequences of frames rather than individual frames in isolation. This dramatically improved detection accuracy during high-speed gameplay moments.</p>
+            
+            <h3>Challenge 2: Processing Efficiency</h3>
+            <p>Early versions of the pipeline were computationally expensive, making real-time or near-real-time processing impractical.</p>
+            <p><strong>Solution:</strong> I optimized the pipeline by implementing a multi-stage processing approach:
+            <ol>
+                <li>Low-resolution initial scan to identify frames of interest</li>
+                <li>Detailed analysis only on potentially relevant segments</li>
+                <li>Parallel processing for independent video chunks</li>
+            </ol>
+            This reduced processing time by approximately 60%.</p>
+            
+            <h3>Challenge 3: False Positives</h3>
+            <p>The system would occasionally misclassify normal gameplay as significant events, especially in visually complex scenarios.</p>
+            <p><strong>Solution:</strong> I implemented a confidence scoring system and post-processing validation steps that cross-reference visual cues with game state data to filter out false positives.</p>
+        </section>
+
+        <section class="project-section">
+            <h2>Results and Insights</h2>
+            <p>The final system achieved:</p>
+            <ul>
+                <li>94% accuracy in detecting major game events (goals, saves)</li>
+                <li>89% accuracy for more subtle gameplay elements (bumps, boost steals)</li>
+                <li>Processing speed of approximately 2x real-time (a 5-minute video takes about 2.5 minutes to process)</li>
+                <li>Sub-second search response times across indexed video libraries</li>
+            </ul>
+            
+            <p>Key technical insights gained:</p>
+            <ol>
+                <li>For fast-paced games, considering temporal information (sequences of frames) is crucial for accurate event detection</li>
+                <li>Domain-specific models dramatically outperform general-purpose computer vision models for specialized applications</li>
+                <li>Hybrid approaches that combine visual analysis with game state data yield superior results compared to purely visual methods</li>
+            </ol>
+        </section>
+
+        <section class="project-section">
+            <h2>Future Improvements</h2>
+            <p>While the current system is functional, I've identified several areas for enhancement:</p>
+            <ul>
+                <li><strong>Player Style Analysis:</strong> Extending the system to recognize player-specific patterns and techniques</li>
+                <li><strong>Real-time Processing:</strong> Further optimizing the pipeline to achieve true real-time analysis for live streaming</li>
+                <li><strong>Strategic Insights:</strong> Adding deeper analytical capabilities to identify tactical patterns and team strategies</li>
+                <li><strong>Cross-game Support:</strong> Adapting the architecture to support other fast-paced esports titles</li>
+            </ul>
+        </section>
+    </article>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="year"></span> Filip Cederquist. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html> 
