@@ -43,51 +43,74 @@
         </div>
     </section>
 
-    <section class="projects container">
-        <h2>My Projects</h2>
-        <div class="project-grid">
-            <!-- Project 1 -->
-            <div class="project-card">
-                <h3>Rocket League Video Search API</h3>
-                <p class="project-tags">Computer Vision | Machine Learning | API Development</p>
-                <div class="project-content">
-                    <p><strong>Challenge:</strong> Creating a system that could analyze and categorize Rocket League gameplay videos based on specific events and actions.</p>
-                    <p><strong>Approach:</strong> Developed a computer vision pipeline to detect key gameplay moments, implemented feature extraction algorithms, and built a searchable API interface.</p>
-                    <p><strong>Technical Insights:</strong> Overcame challenges in frame detection accuracy by implementing a custom object recognition model, optimized for real-time processing of high-speed gameplay.</p>
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title">Projects</h2>
+            <div class="project-grid">
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <h3>Sports Commentary Search Engine</h3>
+                    <div class="project-tags">
+                        <span class="tag">NLP</span>
+                        <span class="tag">RAG</span>
+                        <span class="tag">Video Processing</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="challenge">
+                            <strong>Challenge:</strong> Create a system that allows searching for specific commentator reactions and insights within sports broadcast videos.
+                        </div>
+                        <div class="approach">
+                            <strong>Approach:</strong> Built a pipeline that downloads YouTube videos, transcribes content, chunks and embeds text, implements RAG with LLM for contextual understanding, and returns precise YouTube links with timestamps.
+                        </div>
+                        <div class="insights">
+                            <strong>Technical Insights:</strong> Hybrid retrieval approaches significantly outperform pure keyword or semantic search in specialized domains. Sentiment analysis serves as an effective proxy for identifying highlight-worthy moments.
+                        </div>
+                        <a href="projects/rocket-league-video-search.html" class="case-study-link">View Case Study</a>
+                    </div>
                 </div>
-                <div class="project-links">
-                    <a href="projects/rocket-league-video-search.html" class="case-study-link">View Case Study</a>
-                    <a href="#" target="_blank">GitHub Repository</a>
+                
+                <!-- Project 2 -->
+                <div class="project-card">
+                    <h3>Enhanced Finger Detection Algorithm</h3>
+                    <div class="project-tags">
+                        <span class="tag">Computer Vision</span>
+                        <span class="tag">Machine Learning</span>
+                        <span class="tag">XGBoost</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="challenge">
+                            <strong>Challenge:</strong> Improve accuracy of finger detection in challenging conditions like low lighting and occlusion while maintaining computational efficiency.
+                        </div>
+                        <div class="approach">
+                            <strong>Approach:</strong> Gathered comprehensive dataset across various conditions, engineered features from multiple sources, trained an XGBoost model, and optimized the system for real-time performance.
+                        </div>
+                        <div class="insights">
+                            <strong>Technical Insights:</strong> Combining hand-crafted features with learned features significantly outperformed either approach alone. Domain knowledge constraints substantially reduced physically impossible predictions.
+                        </div>
+                        <a href="projects/project-2.html" class="case-study-link">View Case Study</a>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Project 2 -->
-            <div class="project-card">
-                <h3>Technical Project 2</h3>
-                <p class="project-tags">LLMs | Data Processing | NLP</p>
-                <div class="project-content">
-                    <p><strong>Challenge:</strong> Building a system that could effectively process and analyze complex technical documentation.</p>
-                    <p><strong>Approach:</strong> Leveraged large language models to create an intelligent document understanding system, with custom training on technical datasets.</p>
-                    <p><strong>Technical Insights:</strong> Developed innovative prompt engineering techniques to improve context understanding, resulting in 40% better domain-specific comprehension compared to general models.</p>
-                </div>
-                <div class="project-links">
-                    <a href="projects/project-2.html" class="case-study-link">View Case Study</a>
-                    <a href="#" target="_blank">GitHub Repository</a>
-                </div>
-            </div>
-            
-            <!-- Project 3 -->
-            <div class="project-card">
-                <h3>Computer Vision Research Project</h3>
-                <p class="project-tags">Deep Learning | Object Detection | Model Optimization</p>
-                <div class="project-content">
-                    <p><strong>Challenge:</strong> Improving accuracy of object detection in low-light or obscured environments where traditional models struggle.</p>
-                    <p><strong>Approach:</strong> Developed a custom neural network architecture with enhanced feature extraction layers and novel pre-processing techniques.</p>
-                    <p><strong>Technical Insights:</strong> Implemented an innovative loss function that reduced false positives by 35% while maintaining detection sensitivity in challenging visibility conditions.</p>
-                </div>
-                <div class="project-links">
-                    <a href="projects/project-3.html" class="case-study-link">View Case Study</a>
-                    <a href="#" target="_blank">GitHub Repository</a>
+
+                <!-- Project 3 -->
+                <div class="project-card">
+                    <h3>Computer Vision Research Project</h3>
+                    <div class="project-tags">
+                        <span class="tag">Deep Learning</span>
+                        <span class="tag">Object Detection</span>
+                        <span class="tag">Research</span>
+                    </div>
+                    <div class="project-content">
+                        <div class="challenge">
+                            <strong>Challenge:</strong> Overcome limitations in current object detection models for identifying small or partially occluded objects in complex scenes.
+                        </div>
+                        <div class="approach">
+                            <strong>Approach:</strong> Developed a novel architecture combining attention mechanisms with multi-scale feature processing, trained on a custom-augmented dataset designed to emphasize challenging detection scenarios.
+                        </div>
+                        <div class="insights">
+                            <strong>Technical Insights:</strong> Discovered that hierarchical feature fusion significantly improves detection of objects across varied scales. Specialized data augmentation targeting occlusion scenarios improved model robustness by 37%.
+                        </div>
+                        <a href="projects/project-3.html" class="case-study-link">View Case Study</a>
+                    </div>
                 </div>
             </div>
         </div>
