@@ -14,8 +14,8 @@ import subprocess
 USERNAME = os.environ.get("CHESS_USERNAME", "Toxima")
 PLATFORM = os.environ.get("CHESS_PLATFORM", "lichess")
 OUTPUT_FILE = os.environ.get("OUTPUT_FILE", "puzzles.json")
-MAX_GAMES = int(os.environ.get("MAX_GAMES", "5"))
-BLUNDER_THRESHOLD = int(os.environ.get("BLUNDER_THRESHOLD", "150"))
+MAX_GAMES = int(os.environ.get("MAX_GAMES", "15"))
+BLUNDER_THRESHOLD = int(os.environ.get("BLUNDER_THRESHOLD", "80"))
 
 # Chess.com API endpoints
 CHESS_COM_ARCHIVES_URL = f"https://api.chess.com/pub/player/{USERNAME}/games/archives"
@@ -146,13 +146,29 @@ def fetch_chess_com_games(limit=MAX_GAMES):
 def fetch_lichess_games(limit=MAX_GAMES):
     """Fetch recent games from Lichess.org"""
     try:
-        params = {"max": limit, "pgnInJson": "true"}
+        # Use more specific parameters to get better quality games
+        params = {
+            "max": limit,  
+            "pgnInJson": "true",
+            "rated": "true",           # Only rated games
+            "perfType": "blitz,rapid,classical", # Focus on standard time controls
+            "ongoing": "false",        # Exclude games in progress
+            "lastFen": "true"          # Include FEN of final position
+        }
+        
+        print(f"Fetching {limit} rated games for user {USERNAME}...")
         response = requests.get(LICHESS_GAMES_URL, params=params)
         response.raise_for_status()
         
         # Parse NDJSON (each line is a JSON object)
         games = [json.loads(line) for line in response.text.split('\n') if line]
-        return games
+        print(f"Received {len(games)} games from Lichess")
+        
+        # Filter out games with less than 10 moves (likely to be quick losses or non-serious games)
+        filtered_games = [game for game in games if game.get("moves", "").count(" ") > 10]
+        print(f"Filtered to {len(filtered_games)} games with more than 10 moves")
+        
+        return filtered_games
     except Exception as e:
         print(f"Error fetching Lichess games: {e}")
         return []
@@ -179,6 +195,7 @@ def analyze_game(pgn_text, game_url, stockfish_path):
     pgn_io = io.StringIO(pgn_text)
     game = chess.pgn.read_game(pgn_io)
     if not game:
+        print(f"Warning: Could not parse PGN for game {game_url}")
         return []
     
     blunders = []
@@ -191,6 +208,8 @@ def analyze_game(pgn_text, game_url, stockfish_path):
         # Process each move
         node = game.next()
         move_number = 1
+        
+        print(f"Analyzing game {game_url}")
         
         while node:
             # Get position before the move
@@ -222,6 +241,7 @@ def analyze_game(pgn_text, game_url, stockfish_path):
                     "game_url": game_url
                 }
                 blunders.append(blunder)
+                print(f"  Found blunder: move {move_number}, {san_move}, eval change: {eval_change}")
             
             # Move to the next node
             node = node.next()
