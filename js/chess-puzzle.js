@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.puzzleMetadata = {
                     platform: data.platform || 'Chess.com',
                     username: data.username || 'Toxima1',
-                    generated_at: data.generated_at || new Date().toISOString()
+                    generated_at: data.generated_at || new Date().toISOString(),
+                    is_placeholder: data.is_placeholder || false,
+                    message: data.message || ''
                 };
                 
                 // Sort puzzles by difficulty (easiest first)
@@ -54,6 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (puzzles.length > 0) {
                     // Show the first puzzle
                     displayPuzzle(0);
+                    
+                    // If it's a placeholder puzzle, show a note
+                    if (window.puzzleMetadata.is_placeholder) {
+                        const placeholderNote = document.createElement('div');
+                        placeholderNote.className = 'placeholder-note';
+                        placeholderNote.innerHTML = `
+                            <p><em>Note: ${window.puzzleMetadata.message}</em></p>
+                        `;
+                        
+                        // Insert after puzzle details
+                        const puzzleDetails = document.querySelector('.puzzle-details');
+                        if (puzzleDetails) {
+                            puzzleDetails.parentNode.insertBefore(placeholderNote, puzzleDetails.nextSibling);
+                        }
+                    }
                 } else {
                     chessBoard.innerHTML = `
                         <div class="chess-board-content">
@@ -87,7 +104,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPuzzle = puzzles[currentPuzzleIndex];
         
         // Update puzzle details
-        gameInfo.textContent = `Game from ${window.puzzleMetadata.platform} (${window.puzzleMetadata.username})`;
+        const gameInfoText = `Game from ${window.puzzleMetadata.platform} (${window.puzzleMetadata.username})`;
+        
+        // Add game link if available
+        if (currentPuzzle.game_url) {
+            gameInfo.innerHTML = `${gameInfoText} <a href="${currentPuzzle.game_url}" target="_blank" class="game-link"><i class="fas fa-external-link-alt"></i> View Game</a>`;
+        } else {
+            gameInfo.textContent = gameInfoText;
+        }
+        
         positionEval.textContent = (currentPuzzle.eval_change / 100).toFixed(1);
         
         // Map difficulty number to text
@@ -111,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 orientation: currentPuzzle.player_color === 'white' ? 'white' : 'black',
                 onDragStart: onDragStart,
                 onDrop: onDrop,
-                onSnapEnd: onSnapEnd
+                onSnapEnd: onSnapEnd,
+                pieceTheme: 'https://lichess1.org/assets/piece/cburnett/{piece}.svg'
             });
         } else {
             board.position(currentPuzzle.fen, false);

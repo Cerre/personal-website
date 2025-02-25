@@ -337,6 +337,29 @@ section h2:after {
     border-radius: 0.5rem;
 }
 
+.game-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    color: var(--secondary-color);
+    font-size: 0.9em;
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: rgba(37, 99, 235, 0.1);
+    transition: all 0.2s ease;
+}
+
+.game-link:hover {
+    background-color: rgba(37, 99, 235, 0.2);
+    color: var(--light-color);
+}
+
+.game-link i {
+    margin-right: 4px;
+    font-size: 0.85em;
+}
+
 .puzzle-details p {
     margin-bottom: 0.5rem;
 }

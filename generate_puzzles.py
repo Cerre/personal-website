@@ -165,7 +165,15 @@ def get_pgn_from_game(game, platform):
         return game.get("pgn", "")
     return ""
 
-def analyze_game(pgn_text, stockfish_path):
+def get_game_url(game, platform):
+    """Extract the URL for a game based on platform"""
+    if platform == "chess.com":
+        return game.get("url", "")
+    elif platform == "lichess":
+        return f"https://lichess.org/{game.get('id', '')}"
+    return ""
+
+def analyze_game(pgn_text, game_url, stockfish_path):
     """Analyze a game to find blunders"""
     # Parse PGN
     pgn_io = io.StringIO(pgn_text)
@@ -210,7 +218,8 @@ def analyze_game(pgn_text, stockfish_path):
                     "move_number": move_number,
                     "blundered_move": san_move,
                     "eval_change": eval_change,
-                    "difficulty": calculate_difficulty(eval_change)
+                    "difficulty": calculate_difficulty(eval_change),
+                    "game_url": game_url
                 }
                 blunders.append(blunder)
             
@@ -254,10 +263,11 @@ def main():
     # Analyze each game
     for game in games:
         pgn = get_pgn_from_game(game, PLATFORM)
+        game_url = get_game_url(game, PLATFORM)
         if pgn:
-            game_blunders = analyze_game(pgn, stockfish_path)
+            game_blunders = analyze_game(pgn, game_url, stockfish_path)
             puzzles.extend(game_blunders)
-            print(f"Found {len(game_blunders)} blunders in game")
+            print(f"Found {len(game_blunders)} blunders in game {game_url}")
     
     # Output data structure - always create this file
     output = {
@@ -279,7 +289,8 @@ def main():
             "move_number": 3,
             "blundered_move": "Nc6",
             "eval_change": 900,
-            "difficulty": 2
+            "difficulty": 2,
+            "game_url": "https://lichess.org/learn#/4"
         }
         output["puzzles"] = [placeholder_puzzle]
         output["count"] = 1
