@@ -31,14 +31,20 @@ jobs:
       - name: Generate puzzles
         run: python generate_puzzles.py
         env:
-          CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima1' }}
-          CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'chess.com' }}
+          CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima' }}
+          CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'lichess' }}
           STOCKFISH_PATH: '/usr/games/stockfish'
       
       - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add puzzles.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update chess puzzles [skip ci]"
-          git push 
+          
+          # Check if puzzles.json exists before trying to add it
+          if [ -f puzzles.json ]; then
+            git add puzzles.json
+            git diff --quiet && git diff --staged --quiet || git commit -m "Update chess puzzles [skip ci]"
+            git push
+          else
+            echo "No puzzles.json file was generated. Skipping commit."
+          fi 

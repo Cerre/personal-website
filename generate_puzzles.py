@@ -11,8 +11,8 @@ import tempfile
 import subprocess
 
 # Configuration (can be overridden with environment variables)
-USERNAME = os.environ.get("CHESS_USERNAME", "Toxima1")
-PLATFORM = os.environ.get("CHESS_PLATFORM", "chess.com")
+USERNAME = os.environ.get("CHESS_USERNAME", "Toxima")
+PLATFORM = os.environ.get("CHESS_PLATFORM", "lichess")
 OUTPUT_FILE = os.environ.get("OUTPUT_FILE", "puzzles.json")
 MAX_GAMES = int(os.environ.get("MAX_GAMES", "5"))
 BLUNDER_THRESHOLD = int(os.environ.get("BLUNDER_THRESHOLD", "150"))
@@ -259,23 +259,38 @@ def main():
             puzzles.extend(game_blunders)
             print(f"Found {len(game_blunders)} blunders in game")
     
-    # Save puzzles to JSON file
-    if puzzles:
-        # Add metadata and timestamps
-        output = {
-            "puzzles": puzzles,
-            "count": len(puzzles),
-            "generated_at": datetime.now().isoformat(),
-            "username": USERNAME,
-            "platform": PLATFORM
+    # Output data structure - always create this file
+    output = {
+        "puzzles": puzzles,
+        "count": len(puzzles),
+        "generated_at": datetime.now().isoformat(),
+        "username": USERNAME,
+        "platform": PLATFORM
+    }
+    
+    # If no puzzles were found, add a placeholder puzzle
+    if not puzzles:
+        print("No puzzles generated, adding a placeholder puzzle")
+        # Provide a simple default puzzle - Scholar's mate position
+        placeholder_puzzle = {
+            "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+            "solution": ["e8f7"],  # Kf7 is the only legal move
+            "player_color": "black",
+            "move_number": 3,
+            "blundered_move": "Nc6",
+            "eval_change": 900,
+            "difficulty": 2
         }
-        
-        with open(OUTPUT_FILE, 'w') as f:
-            json.dump(output, f, indent=2)
-        
-        print(f"Saved {len(puzzles)} puzzles to {OUTPUT_FILE}")
-    else:
-        print("No puzzles generated")
+        output["puzzles"] = [placeholder_puzzle]
+        output["count"] = 1
+        output["is_placeholder"] = True
+        output["message"] = "No blunders found in recent games. This is a placeholder puzzle."
+    
+    # Save puzzles to JSON file
+    with open(OUTPUT_FILE, 'w') as f:
+        json.dump(output, f, indent=2)
+    
+    print(f"Saved {len(output['puzzles'])} puzzles to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main() 
