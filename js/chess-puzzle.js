@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameInfo = document.getElementById('game-info');
     const positionEval = document.getElementById('position-eval');
     const puzzleDifficulty = document.getElementById('puzzle-difficulty');
+    const turnIndicator = document.getElementById('turn-indicator');
     
     // Only initialize if we're on a page with the chess puzzle
     if (!chessBoard) return;
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPuzzleIndex = 0;
     let board = null;
     let game = null;
+    let lastMove = null; // Store the last move for animation
     
     // Path to the puzzles.json file
     const PUZZLES_FILE = 'puzzles.json';
@@ -128,6 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize chess.js with the puzzle position
         game = new Chess(currentPuzzle.fen);
         
+        // Update turn indicator
+        updateTurnIndicator();
+        
         // Initialize or update the chessboard
         if (board === null) {
             board = Chessboard('chess-board', {
@@ -146,6 +151,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Reset solution display
         solutionContainer.style.display = 'none';
+        
+        // Clear any highlights
+        clearHighlightedSquares();
         
         // Convert UCI moves to SAN notation for solution display
         const solution = uciToSan(currentPuzzle.solution[0]);
@@ -206,6 +214,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // If illegal move, snap back
         if (move === null) return 'snapback';
         
+        // Highlight the move
+        highlightSquares(source, target);
+        
+        // Update turn indicator
+        updateTurnIndicator();
+        
         // Check if the move matches the solution
         const currentPuzzle = puzzles[currentPuzzleIndex];
         const userMoveUci = source + target + (move.promotion || '');
@@ -214,16 +228,24 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show success message and solution
             solutionContainer.style.display = 'block';
             solutionMove.innerHTML = `<span class="correct-move">${move.san} ✓</span>`;
+            
+            // Add visual feedback - Green flash on the board
+            addBoardFeedback('correct');
         } else {
             // Show that the move was incorrect
             solutionContainer.style.display = 'block';
             solutionMove.innerHTML = `<span class="incorrect-move">${move.san} ✗</span>. The correct move was ${uciToSan(currentPuzzle.solution[0])}.`;
             
-            // Undo the move
+            // Add visual feedback - Red flash on the board
+            addBoardFeedback('incorrect');
+            
+            // Undo the move after a delay
             setTimeout(() => {
                 game.undo();
                 board.position(game.fen());
-            }, 1000);
+                clearHighlightedSquares();
+                updateTurnIndicator();
+            }, 1500);
         }
     }
     
@@ -232,9 +254,112 @@ document.addEventListener('DOMContentLoaded', function() {
         board.position(game.fen());
     }
     
+    // Function to update the turn indicator
+    function updateTurnIndicator() {
+        if (game) {
+            const turn = game.turn() === 'w' ? 'White' : 'Black';
+            turnIndicator.textContent = turn;
+            turnIndicator.className = game.turn() === 'w' ? 'white' : 'black';
+        }
+    }
+    
+    // Function to highlight squares
+    function highlightSquares(source, target) {
+        // Remove any existing highlights
+        clearHighlightedSquares();
+        
+        // Highlight the source and target squares
+        const boardEl = document.getElementById('chess-board');
+        const sourceSquare = boardEl.querySelector('.square-' + source);
+        const targetSquare = boardEl.querySelector('.square-' + target);
+        
+        if (sourceSquare) sourceSquare.classList.add('highlight-square');
+        if (targetSquare) targetSquare.classList.add('highlight-square');
+        
+        // Store the move
+        lastMove = { from: source, to: target };
+    }
+    
+    // Function to clear highlighted squares
+    function clearHighlightedSquares() {
+        const highlights = document.querySelectorAll('.highlight-square');
+        highlights.forEach(el => el.classList.remove('highlight-square'));
+    }
+    
+    // Function to add visual feedback on the board for correct/incorrect moves
+    function addBoardFeedback(type) {
+        const boardEl = document.getElementById('chess-board');
+        if (!boardEl) return;
+        
+        // Create an overlay div for the feedback
+        const overlay = document.createElement('div');
+        overlay.className = `board-feedback ${type}`;
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.right = '0';
+        overlay.style.bottom = '0';
+        overlay.style.backgroundColor = type === 'correct' ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)';
+        overlay.style.zIndex = '1000';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.transition = 'opacity 1.5s';
+        overlay.style.opacity = '1';
+        
+        // Make sure the board container has position relative
+        const boardContainer = boardEl.closest('.chess-board-container');
+        if (boardContainer) {
+            if (getComputedStyle(boardContainer).position === 'static') {
+                boardContainer.style.position = 'relative';
+            }
+            
+            // Add the overlay
+            boardContainer.appendChild(overlay);
+            
+            // Remove the overlay after animation
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.remove();
+                }, 1500);
+            }, 200);
+        }
+    }
+    
     // Event listeners
     showSolutionBtn.addEventListener('click', function() {
+        // Get the current puzzle and its solution
+        const currentPuzzle = puzzles[currentPuzzleIndex];
+        if (!currentPuzzle || !currentPuzzle.solution || !currentPuzzle.solution.length) return;
+        
+        // Show the solution container
         solutionContainer.style.display = 'block';
+        
+        // Extract the source and target squares from UCI notation
+        const uci = currentPuzzle.solution[0];
+        const source = uci.substring(0, 2);
+        const target = uci.substring(2, 4);
+        const promotion = uci.length > 4 ? uci.substring(4, 5) : undefined;
+        
+        // Make the move on the chess.js instance
+        const move = game.move({
+            from: source,
+            to: target,
+            promotion: promotion || 'q'
+        });
+        
+        if (move) {
+            // Update the board with the new position
+            board.position(game.fen());
+            
+            // Highlight the move
+            highlightSquares(source, target);
+            
+            // Update the turn indicator
+            updateTurnIndicator();
+            
+            // Show success message
+            solutionMove.innerHTML = `<span class="correct-move">${move.san} ✓</span>`;
+        }
     });
     
     tryAnotherBtn.addEventListener('click', function() {

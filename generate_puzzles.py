@@ -387,6 +387,19 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
         blunders = []
         board = game.board()
         
+        # Determine which color Toxima is playing
+        toxima_color = None
+        if 'White' in game.headers and game.headers['White'].lower() == USERNAME.lower():
+            toxima_color = chess.WHITE
+            print(f"DEBUG: {USERNAME} is playing White")
+        elif 'Black' in game.headers and game.headers['Black'].lower() == USERNAME.lower():
+            toxima_color = chess.BLACK
+            print(f"DEBUG: {USERNAME} is playing Black")
+        else:
+            print(f"WARNING: Could not determine {USERNAME}'s color in this game. Headers: {game.headers}")
+            # If we can't determine the color, skip this game
+            return []
+        
         # Debug: examine headers
         if DEBUG:
             print(f"DEBUG: Game headers: {game.headers}")
@@ -409,6 +422,9 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
             
             while node:
                 try:
+                    # Only check for blunders when it's Toxima's turn
+                    is_toxima_turn = (board.turn == toxima_color)
+                    
                     # Get position before the move
                     prev_fen = board.fen()
                     
@@ -436,9 +452,9 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
                     if DEBUG and moves_analyzed < 3:
                         print(f"DEBUG: Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
                     
-                    # Check if move is a blunder
-                    if eval_change >= blunder_threshold:
-                        player = "white" if board.turn == chess.BLACK else "black"
+                    # Check if move is a blunder and it was Toxima's move
+                    if is_toxima_turn and eval_change >= blunder_threshold:
+                        player = "white" if toxima_color == chess.WHITE else "black"
                         blunder = {
                             "fen": prev_fen,
                             "solution": [move.uci()],
@@ -450,7 +466,7 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
                             "game_url": game_url
                         }
                         blunders.append(blunder)
-                        print(f"  Found blunder: move {move_number}, {san_move}, eval change: {eval_change}")
+                        print(f"  Found blunder by {USERNAME}: move {move_number}, {san_move}, eval change: {eval_change}")
                     
                     # Move to the next node
                     node = node.next()
@@ -465,7 +481,7 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
                     if board.turn == chess.WHITE:
                         move_number += 1
             
-            print(f"DEBUG: Completed analysis, analyzed {moves_analyzed} moves, found {len(blunders)} blunders")
+            print(f"DEBUG: Completed analysis, analyzed {moves_analyzed} moves, found {len(blunders)} blunders by {USERNAME}")
             
         except Exception as e:
             print(f"ERROR during game analysis: {e}")
