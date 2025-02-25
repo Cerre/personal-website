@@ -1,0 +1,21 @@
+{
+  "puzzles": [
+    {
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+      "solution": [
+        "e8f7"
+      ],
+      "player_color": "black",
+      "move_number": 3,
+      "blundered_move": "Nc6",
+      "eval_change": 900,
+      "difficulty": 2
+    }
+  ],
+  "count": 1,
+  "generated_at": "2025-02-25T22:11:09.603458",
+  "username": "Toxima",
+  "platform": "lichess",
+  "is_placeholder": true,
+  "message": "No blunders found in recent games. This is a placeholder puzzle."
+}
