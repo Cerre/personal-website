@@ -27,30 +27,99 @@ def download_stockfish():
     print("Downloading Stockfish...")
     stockfish_path = os.path.join(tempfile.gettempdir(), "stockfish")
     
-    if sys.platform == "linux" or sys.platform == "linux2":
-        # Linux - download Stockfish 16
-        url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16/stockfish-ubuntu-x86-64-avx2.tar.gz"
-        subprocess.run(["wget", url, "-O", "stockfish.tar.gz"], check=True)
-        subprocess.run(["tar", "-xzf", "stockfish.tar.gz"], check=True)
-        subprocess.run(["mv", "stockfish/stockfish-ubuntu-x86-64-avx2", stockfish_path], check=True)
-        subprocess.run(["chmod", "+x", stockfish_path], check=True)
-    elif sys.platform == "darwin":
-        # macOS - download Stockfish 16
-        url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16/stockfish-macos-x86-64-avx2.tar.gz"
-        subprocess.run(["curl", "-L", url, "-o", "stockfish.tar.gz"], check=True)
-        subprocess.run(["tar", "-xzf", "stockfish.tar.gz"], check=True)
-        subprocess.run(["mv", "stockfish/stockfish-macos-x86-64-avx2", stockfish_path], check=True)
-        subprocess.run(["chmod", "+x", stockfish_path], check=True)
-    elif sys.platform == "win32":
-        # Windows - download Stockfish 16
-        url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16/stockfish-windows-x86-64-avx2.zip"
-        subprocess.run(["curl", "-L", url, "-o", "stockfish.zip"], check=True)
-        subprocess.run(["unzip", "stockfish.zip"], check=True)
-        stockfish_path = os.path.join(tempfile.gettempdir(), "stockfish.exe")
-        subprocess.run(["mv", "stockfish/stockfish-windows-x86-64-avx2.exe", stockfish_path], check=True)
-
-    print(f"Stockfish downloaded to {stockfish_path}")
-    return stockfish_path
+    try:
+        if sys.platform == "linux" or sys.platform == "linux2":
+            # Linux - download Stockfish 16
+            url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16.0/stockfish-ubuntu-x86-64-avx2.tar.gz"
+            print(f"Downloading from {url}")
+            subprocess.run(["wget", url, "-O", "stockfish.tar.gz"], check=True)
+            subprocess.run(["tar", "-xzf", "stockfish.tar.gz"], check=True)
+            
+            # List files to see the actual structure
+            print("Extracted files:")
+            subprocess.run(["ls", "-la"], check=True)
+            
+            # Try to find the stockfish executable
+            try:
+                subprocess.run(["find", ".", "-name", "stockfish*", "-type", "f", "-executable"], check=True)
+            except:
+                print("Could not find stockfish executable with find")
+            
+            # Move the stockfish executable - path might vary
+            try:
+                subprocess.run(["mv", "./stockfish-*-ubuntu-x86-64-avx2", stockfish_path], check=False)
+            except:
+                # Try alternative paths
+                try:
+                    subprocess.run(["find", ".", "-name", "stockfish*", "-type", "f", "-executable", "-exec", "mv", "{}", stockfish_path, ";"], check=False)
+                except:
+                    print("Could not move stockfish executable, will try to use it directly")
+                    # See if we can find it
+                    result = subprocess.run(["find", ".", "-name", "stockfish*", "-type", "f", "-executable"], capture_output=True, text=True)
+                    if result.stdout.strip():
+                        stockfish_path = result.stdout.strip().split("\n")[0]
+                        print(f"Found stockfish at: {stockfish_path}")
+            
+            # Make sure it's executable
+            try:
+                subprocess.run(["chmod", "+x", stockfish_path], check=True)
+            except:
+                print(f"Could not chmod {stockfish_path}")
+                
+        elif sys.platform == "darwin":
+            # macOS - download Stockfish 16
+            url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16.0/stockfish-macos-x86-64-avx2.tar.gz"
+            subprocess.run(["curl", "-L", url, "-o", "stockfish.tar.gz"], check=True)
+            subprocess.run(["tar", "-xzf", "stockfish.tar.gz"], check=True)
+            
+            # List files to see the actual structure
+            print("Extracted files:")
+            subprocess.run(["ls", "-la"], check=True)
+            
+            # Find and move the stockfish executable - path might vary
+            result = subprocess.run(["find", ".", "-name", "stockfish*", "-type", "f", "-perm", "+111"], capture_output=True, text=True)
+            if result.stdout.strip():
+                found_path = result.stdout.strip().split("\n")[0]
+                subprocess.run(["mv", found_path, stockfish_path], check=True)
+            else:
+                raise Exception("Could not find stockfish executable")
+                
+            subprocess.run(["chmod", "+x", stockfish_path], check=True)
+            
+        elif sys.platform == "win32":
+            # Windows - download Stockfish 16
+            url = "https://github.com/official-stockfish/Stockfish/releases/download/sf_16.0/stockfish-windows-x86-64-avx2.zip"
+            subprocess.run(["curl", "-L", url, "-o", "stockfish.zip"], check=True)
+            subprocess.run(["unzip", "stockfish.zip"], check=True)
+            
+            # List files to see the actual structure
+            print("Extracted files:")
+            subprocess.run(["dir", "/b"], shell=True, check=True)
+            
+            stockfish_path = os.path.join(tempfile.gettempdir(), "stockfish.exe")
+            
+            # Find and move the stockfish executable - path might vary
+            result = subprocess.run(["where", "/r", ".", "stockfish*.exe"], capture_output=True, text=True, shell=True)
+            if result.stdout.strip():
+                found_path = result.stdout.strip().split("\n")[0]
+                subprocess.run(["move", found_path, stockfish_path], shell=True, check=True)
+            else:
+                raise Exception("Could not find stockfish executable")
+    
+        print(f"Stockfish downloaded to {stockfish_path}")
+        return stockfish_path
+        
+    except Exception as e:
+        print(f"Error downloading/preparing Stockfish: {e}")
+        # As a fallback, try to use stockfish from PATH
+        print("Trying to use stockfish from PATH...")
+        try:
+            # Check if stockfish is available in PATH
+            subprocess.run(["stockfish", "--version"], check=True, capture_output=True)
+            return "stockfish"
+        except:
+            print("Could not find stockfish in PATH either")
+            raise
 
 def fetch_chess_com_games(limit=MAX_GAMES):
     """Fetch recent games from Chess.com"""

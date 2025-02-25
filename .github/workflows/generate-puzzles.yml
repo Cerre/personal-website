@@ -24,12 +24,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-chess.txt
+          sudo apt-get update
+          sudo apt-get install -y stockfish
+          which stockfish
       
       - name: Generate puzzles
         run: python generate_puzzles.py
         env:
           CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima1' }}
           CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'chess.com' }}
+          STOCKFISH_PATH: '/usr/games/stockfish'
       
       - name: Commit and push changes
         run: |
