@@ -1,22 +1,116 @@
 {
   "puzzles": [
     {
-      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+      "fen": "8/1b1Q3p/p3Nkp1/3p4/8/2q5/P1P2KPP/8 w - - 1 31",
       "solution": [
-        "e8f7"
+        "d7b7"
+      ],
+      "player_color": "white",
+      "move_number": 31,
+      "blundered_move": "Qxb7",
+      "eval_change": 648,
+      "difficulty": 2,
+      "game_url": null
+    },
+    {
+      "fen": "8/1Q5p/p3Nkp1/2Kp4/4q3/8/P5PP/8 b - - 13 38",
+      "solution": [
+        "e4c4"
       ],
       "player_color": "black",
-      "move_number": 3,
-      "blundered_move": "Nc6",
-      "eval_change": 900,
+      "move_number": 38,
+      "blundered_move": "Qc4+",
+      "eval_change": 9985,
+      "difficulty": 1,
+      "game_url": null
+    },
+    {
+      "fen": "2r3k1/p2b2pp/4p3/3pP1qP/P2P2P1/1QP3r1/3KB3/2R2R2 w - - 3 27",
+      "solution": [
+        "d2c2"
+      ],
+      "player_color": "white",
+      "move_number": 27,
+      "blundered_move": "Kc2",
+      "eval_change": 674,
       "difficulty": 2,
-      "game_url": "https://lichess.org/learn#/4"
+      "game_url": null
+    },
+    {
+      "fen": "2r3k1/p2b2pp/4p3/3pP1qP/P2P2P1/1QP3r1/2K1B3/2R2R2 b - - 4 27",
+      "solution": [
+        "d7e8"
+      ],
+      "player_color": "black",
+      "move_number": 27,
+      "blundered_move": "Be8",
+      "eval_change": 939,
+      "difficulty": 1,
+      "game_url": null
+    },
+    {
+      "fen": "4b1k1/p5pp/B1r1p3/3pP1qP/P2P2P1/1QP1r3/8/1KR2R2 w - - 9 30",
+      "solution": [
+        "b3b8"
+      ],
+      "player_color": "white",
+      "move_number": 30,
+      "blundered_move": "Qb8",
+      "eval_change": 775,
+      "difficulty": 2,
+      "game_url": null
+    },
+    {
+      "fen": "4b1k1/6pp/Bp2p3/3pP1qP/P2P2P1/2P1r3/1K6/2R2R2 b - - 1 32",
+      "solution": [
+        "e3e2"
+      ],
+      "player_color": "black",
+      "move_number": 32,
+      "blundered_move": "Re2+",
+      "eval_change": 527,
+      "difficulty": 2,
+      "game_url": null
+    },
+    {
+      "fen": "5R2/6pk/4p2p/1p1pq2P/b5PK/8/8/5R2 w - - 2 46",
+      "solution": [
+        "f8f7"
+      ],
+      "player_color": "white",
+      "move_number": 46,
+      "blundered_move": "R8f7",
+      "eval_change": 9357,
+      "difficulty": 1,
+      "game_url": null
+    },
+    {
+      "fen": "2kr3r/ppp2pp1/1n1qp1p1/1N1n4/3P2P1/5B1P/PPPQ4/2KRR3 b - - 7 17",
+      "solution": [
+        "b6c4"
+      ],
+      "player_color": "black",
+      "move_number": 17,
+      "blundered_move": "Nc4",
+      "eval_change": 747,
+      "difficulty": 2,
+      "game_url": null
+    },
+    {
+      "fen": "1k1r4/ppp3p1/5p2/1Q1PpBp1/5nP1/7r/PPP5/2KR4 b - - 5 30",
+      "solution": [
+        "d8d5"
+      ],
+      "player_color": "black",
+      "move_number": 30,
+      "blundered_move": "Rxd5",
+      "eval_change": 9692,
+      "difficulty": 1,
+      "game_url": null
     }
   ],
-  "count": 1,
-  "generated_at": "2025-02-25T22:24:38.167423",
+  "count": 9,
+  "generated_at": "2025-02-26T00:05:37.173147",
   "username": "Toxima",
-  "platform": "lichess",
-  "is_placeholder": true,
-  "message": "No blunders found in recent games. This is a placeholder puzzle."
+  "platform": "lichess"
 }
