@@ -138,7 +138,30 @@ section h2:after {
 
 .project-card h3 {
     font-size: 1.3rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: #93c5fd; /* Light blue highlight for project titles */
+}
+
+.project-tags {
+    font-size: 0.9rem;
+    color: #9ca3af; /* Subtle gray for tags */
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.project-content {
+    margin-bottom: 1.2rem;
+}
+
+.project-content p {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.project-content strong {
+    color: #93c5fd; /* Light blue for highlighted terms */
+    font-weight: 600;
 }
 
 .project-links {
@@ -154,10 +177,20 @@ section h2:after {
     border-radius: 0.25rem;
     font-size: 0.9rem;
     transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.project-links a.case-study-link {
+    background-color: #4f46e5; /* Different color for case study links */
 }
 
 .project-links a:hover {
     background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.project-links a.case-study-link:hover {
+    background-color: #6366f1; /* Lighter purple on hover */
 }
 
 /* Footer */
