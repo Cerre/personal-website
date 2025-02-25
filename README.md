@@ -7,9 +7,40 @@ A clean, responsive personal portfolio website to showcase your projects and soc
 - Responsive design that works on all devices
 - Clean, modern UI
 - Sections for about me, social links, and projects
+- Interactive chess puzzle widget featuring your latest blunders
 - Easy to customize with your own content
 - Smooth animations
 - No complex frameworks or dependencies
+
+## Chess Puzzle Widget
+
+The website includes an interactive chess puzzle widget that displays your latest chess blunders, allowing visitors to solve them.
+
+### How It Works
+
+1. A GitHub Action runs daily to fetch your recent games from Chess.com or Lichess
+2. It analyzes the games to find blunders using the Stockfish chess engine
+3. The puzzles are stored in `puzzles.json` and served directly from your website
+4. Visitors can interact with the chess board to solve the puzzles
+5. No backend server is required
+
+### Configuration
+
+You can customize the chess widget by:
+
+1. Setting GitHub Secrets in your repository:
+   - `CHESS_USERNAME`: Your Chess.com or Lichess username
+   - `CHESS_PLATFORM`: Either "chess.com" or "lichess"
+
+2. Editing the `generate_puzzles.py` script to change:
+   - The number of games to analyze (`MAX_GAMES`)
+   - The threshold for what counts as a blunder (`BLUNDER_THRESHOLD`)
+   - How puzzle difficulty is calculated
+
+3. Manually triggering the GitHub Action to generate new puzzles:
+   - Go to the "Actions" tab in your GitHub repository
+   - Select the "Generate Chess Puzzles" workflow
+   - Click "Run workflow"
 
 ## How to Customize
 

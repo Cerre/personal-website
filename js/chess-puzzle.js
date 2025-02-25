@@ -14,90 +14,196 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on a page with the chess puzzle
     if (!chessBoard) return;
     
-    // Mock data for prototype - would be replaced with API call
-    const mockPuzzles = [
-        {
-            fen: 'r1bqkbnr/ppp2ppp/2np4/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 4',
-            solution: 'Qxf7+',
-            explanation: 'Queen sacrifice leading to checkmate in 2 moves. After Qxf7+, Kxf7, Bd5+ forces the king to move, and then Bxc6+ wins the queen.',
-            game: 'Blitz match on Chess.com vs. player rated 1850',
-            evaluation: '-4.2',
-            difficulty: 'Intermediate'
-        },
-        {
-            fen: 'r2qkb1r/pp2nppp/3p4/2pNN3/2BnP3/3P4/PPP2PPP/R1BbK2R w KQkq - 1 8',
-            solution: 'Nf6+',
-            explanation: 'Knight fork attacking the king and queen simultaneously. After gxf6, Bxd1 wins the queen.',
-            game: 'Daily game on Lichess.org vs. player rated 1720',
-            evaluation: '-3.5',
-            difficulty: 'Advanced'
-        },
-        {
-            fen: '2r3k1/pp3pp1/2n1p2p/2P5/3P4/PB3qP1/1P1Q1P1P/R3R1K1 b - - 0 1',
-            solution: 'Qg2+',
-            explanation: 'Forced mate in 3. After Qg2+, Kxg2, Rxc5 threatening the queen, and then Re8# is coming.',
-            game: 'Rapid tournament game vs. player rated 1600',
-            evaluation: '+5.7',
-            difficulty: 'Challenging'
-        }
-    ];
+    // Global variables
+    let puzzles = [];
+    let currentPuzzleIndex = 0;
+    let board = null;
+    let game = null;
     
-    let currentPuzzle;
+    // Path to the puzzles.json file
+    const PUZZLES_FILE = 'puzzles.json';
     
-    // Simulate loading a puzzle with a slight delay
-    setTimeout(displayRandomPuzzle, 1500);
+    // Load puzzles
+    loadPuzzles();
     
-    // Display a random puzzle from our mock data
-    function displayRandomPuzzle() {
-        // Remove placeholder if it exists
-        const placeholder = chessBoard.querySelector('.chess-board-placeholder');
-        if (placeholder) {
-            placeholder.remove();
-        }
-        
-        // Select random puzzle
-        currentPuzzle = mockPuzzles[Math.floor(Math.random() * mockPuzzles.length)];
-        
-        // In a real implementation, we would fetch from our API:
-        // fetch('https://api.example.com/chess-blunder')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         currentPuzzle = data;
-        //         displayPuzzle();
-        //     });
-        
-        displayPuzzle();
-    }
-    
-    function displayPuzzle() {
-        // Update puzzle details
-        gameInfo.textContent = currentPuzzle.game;
-        positionEval.textContent = currentPuzzle.evaluation;
-        puzzleDifficulty.textContent = currentPuzzle.difficulty;
-        
-        // Update solution details (hidden initially)
-        solutionMove.textContent = currentPuzzle.solution;
-        solutionExplanation.textContent = currentPuzzle.explanation;
-        solutionContainer.style.display = 'none';
-        
-        // In a real implementation, we would use chess.js and chessboard.js:
-        // const board = Chessboard('chess-board', {
-        //     position: currentPuzzle.fen,
-        //     draggable: true,
-        //     dropOffBoard: 'snapback',
-        //     onDrop: handleMove
-        // });
-        
-        // For mockup, just show a message where the board would be
+    function loadPuzzles() {
+        // Show loading placeholder
         chessBoard.innerHTML = `
-            <div class="chess-board-content">
-                <p style="text-align: center; padding: 20px;">
-                    <strong>Chess Board Position</strong><br>
-                    FEN: ${currentPuzzle.fen}<br><br>
-                    <i>The actual chess board would be rendered here using chessboard.js</i>
-                </p>
+            <div class="chess-board-placeholder">
+                <i class="fas fa-chess-knight"></i>
+                <p>Loading my latest blunder...</p>
             </div>
         `;
+        
+        // Fetch puzzles from the JSON file
+        fetch(PUZZLES_FILE)
+            .then(response => response.json())
+            .then(data => {
+                // Store metadata globally
+                window.puzzleMetadata = {
+                    platform: data.platform || 'Chess.com',
+                    username: data.username || 'Toxima1',
+                    generated_at: data.generated_at || new Date().toISOString()
+                };
+                
+                // Sort puzzles by difficulty (easiest first)
+                puzzles = data.puzzles.sort((a, b) => {
+                    return a.difficulty - b.difficulty;
+                });
+                
+                if (puzzles.length > 0) {
+                    // Show the first puzzle
+                    displayPuzzle(0);
+                } else {
+                    chessBoard.innerHTML = `
+                        <div class="chess-board-content">
+                            <p style="text-align: center; padding: 20px;">
+                                No puzzles available yet. Check back soon!
+                            </p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading puzzles:', error);
+                chessBoard.innerHTML = `
+                    <div class="chess-board-content">
+                        <p style="text-align: center; padding: 20px;">
+                            <strong>Error loading chess puzzles</strong><br>
+                            Please try again later.
+                        </p>
+                    </div>
+                `;
+            });
+    }
+    
+    function displayPuzzle(index) {
+        if (puzzles.length === 0) return;
+        
+        // Ensure index is within bounds
+        currentPuzzleIndex = Math.max(0, Math.min(index, puzzles.length - 1));
+        
+        // Get the current puzzle
+        const currentPuzzle = puzzles[currentPuzzleIndex];
+        
+        // Update puzzle details
+        gameInfo.textContent = `Game from ${window.puzzleMetadata.platform} (${window.puzzleMetadata.username})`;
+        positionEval.textContent = (currentPuzzle.eval_change / 100).toFixed(1);
+        
+        // Map difficulty number to text
+        const difficultyMap = {
+            1: "Very Easy",
+            2: "Easy",
+            3: "Intermediate",
+            4: "Challenging",
+            5: "Advanced"
+        };
+        puzzleDifficulty.textContent = difficultyMap[currentPuzzle.difficulty] || "Intermediate";
+        
+        // Initialize chess.js with the puzzle position
+        game = new Chess(currentPuzzle.fen);
+        
+        // Initialize or update the chessboard
+        if (board === null) {
+            board = Chessboard('chess-board', {
+                position: currentPuzzle.fen,
+                draggable: true,
+                orientation: currentPuzzle.player_color === 'white' ? 'white' : 'black',
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                onSnapEnd: onSnapEnd
+            });
+        } else {
+            board.position(currentPuzzle.fen, false);
+            board.orientation(currentPuzzle.player_color === 'white' ? 'white' : 'black');
+        }
+        
+        // Reset solution display
+        solutionContainer.style.display = 'none';
+        
+        // Convert UCI moves to SAN notation for solution display
+        const solution = uciToSan(currentPuzzle.solution[0]);
+        solutionMove.textContent = solution;
+        
+        // Generate a simple explanation based on the evaluation change
+        const evalChange = currentPuzzle.eval_change;
+        if (evalChange > 500) {
+            solutionExplanation.textContent = `This move gains a significant advantage (${(evalChange/100).toFixed(1)} pawns).`;
+        } else if (evalChange > 300) {
+            solutionExplanation.textContent = `This move wins material worth about ${(evalChange/100).toFixed(1)} pawns.`;
+        } else {
+            solutionExplanation.textContent = `This tactical move improves the position by ${(evalChange/100).toFixed(1)} pawns.`;
+        }
+    }
+    
+    function uciToSan(uci) {
+        if (!game || !uci) return uci;
+        
+        // Create a move from UCI notation
+        const move = game.move({
+            from: uci.substring(0, 2),
+            to: uci.substring(2, 4),
+            promotion: uci.length > 4 ? uci.substring(4, 5) : undefined
+        });
+        
+        // Undo the move to restore the position
+        if (move) {
+            const san = move.san;
+            game.undo();
+            return san;
+        }
+        
+        return uci;
+    }
+    
+    // Chess.js functions for handling moves
+    function onDragStart(source, piece, position, orientation) {
+        // Allow moves only for the current player's pieces
+        const currentPuzzle = puzzles[currentPuzzleIndex];
+        const playerColor = currentPuzzle.player_color.charAt(0);
+        
+        if (game.game_over() || 
+            (game.turn() === 'w' && piece.search(/^b/) !== -1) || 
+            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            return false;
+        }
+    }
+    
+    function onDrop(source, target) {
+        // Check if the move is legal
+        const move = game.move({
+            from: source,
+            to: target,
+            promotion: 'q' // Always promote to queen for simplicity
+        });
+        
+        // If illegal move, snap back
+        if (move === null) return 'snapback';
+        
+        // Check if the move matches the solution
+        const currentPuzzle = puzzles[currentPuzzleIndex];
+        const userMoveUci = source + target + (move.promotion || '');
+        
+        if (userMoveUci === currentPuzzle.solution[0]) {
+            // Show success message and solution
+            solutionContainer.style.display = 'block';
+            solutionMove.innerHTML = `<span class="correct-move">${move.san} ✓</span>`;
+        } else {
+            // Show that the move was incorrect
+            solutionContainer.style.display = 'block';
+            solutionMove.innerHTML = `<span class="incorrect-move">${move.san} ✗</span>. The correct move was ${uciToSan(currentPuzzle.solution[0])}.`;
+            
+            // Undo the move
+            setTimeout(() => {
+                game.undo();
+                board.position(game.fen());
+            }, 1000);
+        }
+    }
+    
+    function onSnapEnd() {
+        // Update the board position after the piece snap animation
+        board.position(game.fen());
     }
     
     // Event listeners
@@ -106,18 +212,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     tryAnotherBtn.addEventListener('click', function() {
-        // Hide solution first
-        solutionContainer.style.display = 'none';
-        
-        // Display placeholder while "loading"
-        chessBoard.innerHTML = `
-            <div class="chess-board-placeholder">
-                <i class="fas fa-chess-knight"></i>
-                <p>Loading next blunder...</p>
-            </div>
-        `;
-        
-        // Load new puzzle with a slight delay
-        setTimeout(displayRandomPuzzle, 1000);
+        // Pick a random puzzle
+        const randomIndex = Math.floor(Math.random() * puzzles.length);
+        // Make sure it's different from the current one if possible
+        const newIndex = puzzles.length > 1 && randomIndex === currentPuzzleIndex 
+            ? (randomIndex + 1) % puzzles.length 
+            : randomIndex;
+            
+        displayPuzzle(newIndex);
     });
 }); 
