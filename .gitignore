@@ -22,4 +22,38 @@ yarn-error.log*
 .env.production.local
 
 # Vercel
-.vercel 
+.vercel
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+chess_env/
+.pytest_cache/
+pytest.ini
+
+# Chess puzzle specific
+stockfish.tar.gz
+stockfish*.tar
+output.log
+plots/
+evaluations/
+data/
+temp_*/ 

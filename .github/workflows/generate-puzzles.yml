@@ -33,11 +33,13 @@ jobs:
           which stockfish
       
       - name: Generate puzzles
-        run: python generate_puzzles.py
+        run: python run_chess_puzzles.py
         env:
           CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima' }}
           CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'lichess' }}
           STOCKFISH_PATH: '/usr/games/stockfish'
+          MAX_GAMES: '15'
+          DEFAULT_TIME_LIMIT: '20.0'
       
       - name: Commit and push changes
         run: |
@@ -47,6 +49,12 @@ jobs:
           # Check if puzzles.json exists before trying to add it
           if [ -f puzzles.json ]; then
             git add puzzles.json
+            
+            # Also add position_evaluations.json if it exists
+            if [ -f position_evaluations.json ]; then
+              git add position_evaluations.json
+            fi
+            
             git diff --quiet && git diff --staged --quiet || git commit -m "Update chess puzzles [skip ci]"
             git push
           else

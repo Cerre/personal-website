@@ -42,6 +42,115 @@ You can customize the chess widget by:
    - Select the "Generate Chess Puzzles" workflow
    - Click "Run workflow"
 
+## Chess Puzzles Generator
+
+A Python package for generating chess puzzles from your own games. The system analyzes your games, detects blunders, and creates tactical puzzles that you can use to improve your skills.
+
+### Features
+
+- Analyze your games from Lichess or Chess.com
+- Detect blunders using configurable detection criteria
+- Generate puzzles from the detected blunders
+- Save evaluation data for further analysis
+- Configurable strictness levels for blunder detection
+
+### Installation
+
+1. Clone this repository
+2. Install the requirements:
+
+```bash
+pip install -r requirements-chess.txt
+```
+
+3. Make sure you have Stockfish installed, or the program will try to download it automatically
+
+### Usage
+
+Run the chess puzzle generator with the wrapper script:
+
+```bash
+python run_chess_puzzles.py
+```
+
+You can customize the behavior with command-line arguments:
+
+```bash
+python run_chess_puzzles.py --username YourUsername --platform lichess --count 10
+```
+
+Available options:
+
+- `--username`: Username to fetch games for (default: from config)
+- `--platform`: Platform to fetch games from (lichess or chess.com)
+- `--output`: Output file for generated puzzles
+- `--count`: Number of recent games to analyze
+- `--strictness`: Strictness level for blunder detection (strict, standard, relaxed, all)
+- `--blunder-threshold`: Threshold for blunder detection in centipawns
+- `--pgn`: Analyze games from a local PGN file instead of fetching from online
+- `--stockfish-path`: Path to Stockfish executable (will download if not provided)
+- `--verbose`: Enable verbose output
+
+### Package Structure
+
+The `chess_puzzles` package is structured as follows:
+
+```
+chess_puzzles/
+├── __init__.py         # Package initialization
+├── config.py           # Configuration settings
+├── main.py             # Main entry point
+├── analysis/           # Position analysis and blunder detection
+├── engine/             # Stockfish engine integration
+├── game/               # Game fetching from online platforms
+├── puzzle/             # Puzzle generation and formatting
+└── utils/              # Helper utilities
+```
+
+### Testing
+
+Run the test suite with:
+
+```bash
+pytest test_chess_puzzles.py
+```
+
+### Configuration
+
+You can configure the behavior by setting environment variables or by modifying `chess_puzzles/config.py`.
+
+Key configuration options:
+- `USERNAME`: Username to fetch games for
+- `PLATFORM`: Platform to fetch games from (lichess or chess.com)
+- `MAX_GAMES`: Number of games to analyze
+- `BLUNDER_THRESHOLD`: Threshold for blunder detection in centipawns
+- `STRICTNESS_LEVELS`: Configuration for different strictness levels
+
+### Analyzing Evaluation Distributions
+
+The package includes a script to analyze the distribution of evaluation changes and help determine appropriate thresholds for blunder detection. After generating puzzles, you can run:
+
+```bash
+python analyze_eval_distribution.py --player-only
+```
+
+This script will:
+1. Analyze the evaluation changes recorded in the position_evaluations.json file
+2. Generate visualizations of the distribution of centipawn losses
+3. Provide statistical insights about the evaluation changes
+4. Generate recommended thresholds based on your games
+5. Save plots to the 'plots' directory
+
+Options:
+- `--input/-i`: Path to the position evaluations file (default: "position_evaluations.json")
+- `--output-dir/-o`: Directory to save output plots (default: "plots")
+- `--player-only/-p`: Analyze only moves made by the player (recommended)
+
+The script will generate multiple visualizations:
+- Distribution of evaluation changes across different ranges
+- Cumulative distribution with markers at potential thresholds
+- Game-by-game average and maximum evaluation changes
+
 ## How to Customize
 
 ### Basic Information
