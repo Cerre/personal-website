@@ -11,18 +11,138 @@
       "move_number": 14,
       "blundered_move": "Qc5",
       "blundered_move_uci": "d6c5",
-      "correct_move": "a8d8",
-      "eval_change": 667,
+      "correct_move": "e5e4",
+      "eval_change": 678,
       "difficulty": 4,
       "difficulty_label": "Challenging",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/DUtHFY67",
-      "timestamp": "2025-02-26T12:50:51.039541",
+      "timestamp": "2025-02-26T13:04:02.635686",
+      "show_solution_text": false
+    },
+    {
+      "fen": "8/1Q5p/p3Nkp1/2Kp4/2q5/8/P5PP/8 w - - 14 39",
+      "pre_blunder_fen": "8/1Q5p/p3Nkp1/2Kp4/4q3/8/P5PP/8 b - - 13 38",
+      "solution": [
+        "c5d6"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 38,
+      "blundered_move": "Qc4+",
+      "blundered_move_uci": "e4c4",
+      "correct_move": "e4e6",
+      "eval_change": 9989,
+      "difficulty": 1,
+      "difficulty_label": "Very Easy",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/xlYTdsTP",
+      "timestamp": "2025-02-26T13:04:33.592911",
+      "show_solution_text": false
+    },
+    {
+      "fen": "6k1/5pp1/p1p2b2/2P4p/3p4/1K1Q1P2/PPP3q1/4R3 w - - 2 37",
+      "pre_blunder_fen": "6k1/5pp1/p1p5/2P1b2p/3p4/1K1Q1P2/PPP3q1/4R3 b - - 1 36",
+      "solution": [
+        "e1e8"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 36,
+      "blundered_move": "Bf6",
+      "blundered_move_uci": "e5f6",
+      "correct_move": "g2g3",
+      "eval_change": 9907,
+      "difficulty": 1,
+      "difficulty_label": "Very Easy",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/xIwwVheT",
+      "timestamp": "2025-02-26T13:05:18.451894",
+      "show_solution_text": false
+    },
+    {
+      "fen": "r3kr2/pp1b3p/2n4b/q1p1np2/3pN2B/1Q1P3P/PP1NBPP1/R3K2R w KQq - 0 17",
+      "pre_blunder_fen": "r3kr2/pp1b3p/2n2p1b/q1p1n3/3pN2B/1Q1P3P/PP1NBPP1/R3K2R b KQq - 7 16",
+      "solution": [
+        "e4d6"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 16,
+      "blundered_move": "f5",
+      "blundered_move_uci": "f6f5",
+      "correct_move": "e8c8",
+      "eval_change": 10115,
+      "difficulty": 1,
+      "difficulty_label": "Very Easy",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/S7urz76K",
+      "timestamp": "2025-02-26T13:06:43.227107",
+      "show_solution_text": false
+    },
+    {
+      "fen": "r1b1qrk1/ppp2ppp/3p1n2/3N2B1/2B1P3/5Q2/PP3PPb/3RR1K1 w - - 0 14",
+      "pre_blunder_fen": "r1b1qrk1/ppp2ppp/3p1n2/3Nb1B1/2B1P3/5Q2/PP3PPP/3RR1K1 b - - 3 13",
+      "solution": [
+        "g1h2"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 13,
+      "blundered_move": "Bxh2+",
+      "blundered_move_uci": "e5h2",
+      "correct_move": "f6d5",
+      "eval_change": 527,
+      "difficulty": 5,
+      "difficulty_label": "Advanced",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/NsASd5zS",
+      "timestamp": "2025-02-26T13:06:48.886761",
+      "show_solution_text": false
+    },
+    {
+      "fen": "r1b2rk1/pp3ppp/4p3/4n3/2qpN2R/6Q1/PPP2PPP/2K2B1R w - - 2 16",
+      "pre_blunder_fen": "r1b2rk1/pp3ppp/4p3/2q1n3/3pN2R/6Q1/PPP2PPP/2K2B1R b - - 1 15",
+      "solution": [
+        "e4f6"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 15,
+      "blundered_move": "Qc4",
+      "blundered_move_uci": "c5c4",
+      "correct_move": "c5e7",
+      "eval_change": 9974,
+      "difficulty": 1,
+      "difficulty_label": "Very Easy",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/VxueFaFF",
+      "timestamp": "2025-02-26T13:08:31.046773",
+      "show_solution_text": false
+    },
+    {
+      "fen": "8/8/8/4p3/7n/1k2P1P1/2p2P2/2K5 w - - 0 55",
+      "pre_blunder_fen": "8/8/8/4p3/7R/1k2PnP1/2p2P2/2K5 b - - 3 54",
+      "solution": [
+        "g3h4"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 54,
+      "blundered_move": "Nxh4",
+      "blundered_move_uci": "f3h4",
+      "correct_move": "f3e1",
+      "eval_change": 736,
+      "difficulty": 4,
+      "difficulty_label": "Challenging",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/oR29WeEN",
+      "timestamp": "2025-02-26T13:12:36.555697",
       "show_solution_text": false
     }
   ],
-  "count": 1,
-  "generated_at": "2025-02-26T12:50:51.047763",
+  "count": 7,
+  "generated_at": "2025-02-26T13:12:41.181090",
   "username": "Toxima",
   "platform": "lichess"
 }
