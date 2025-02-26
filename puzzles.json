@@ -8,13 +8,13 @@
       "player_color": "black",
       "move_number": 27,
       "blundered_move": "Be8",
-      "eval_change": 970,
+      "eval_change": 955,
       "difficulty": 1,
       "game_url": "https://lichess.org/LcB6V8yf"
     }
   ],
   "count": 1,
-  "generated_at": "2025-02-26T01:10:18.426215",
+  "generated_at": "2025-02-26T03:08:16.844302",
   "username": "Toxima",
   "platform": "lichess"
 }
