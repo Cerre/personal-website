@@ -115,6 +115,10 @@ class PositionAnalyzer:
                     # Make the move
                     move = node.move
                     san_move = board.san(move)
+                    
+                    # Store the UCI notation of the move before making it
+                    blundered_move_uci = move.uci()
+                    
                     board.push(move)
                     
                     # Save the position after the blunder
@@ -171,11 +175,13 @@ class PositionAnalyzer:
                             # Create blunder data
                             blunder_data = self._create_blunder_data(
                                 post_blunder_fen=post_blunder_fen,  # Use position AFTER the blunder
+                                pre_blunder_fen=prev_fen,          # Include position BEFORE the blunder
                                 punishment_move_uci=punishment_move_uci,  # Best move to punish the blunder
                                 correct_move_uci=correct_move_uci,  # For reference only
                                 player_color=player_turn,
                                 move_number=move_number,
                                 blundered_move=san_move,
+                                blundered_move_uci=blundered_move_uci,  # Pass the UCI notation
                                 eval_change=abs(eval_change),
                                 game_url=game_url,
                                 blunder_type=blunder_type
@@ -243,6 +249,8 @@ class PositionAnalyzer:
     def _create_blunder_data(self, post_blunder_fen: str, punishment_move_uci: str, player_color: str, 
                            move_number: int, blundered_move: str, eval_change: int, 
                            game_url: str, correct_move_uci: Optional[str] = None,
+                           blundered_move_uci: Optional[str] = None,
+                           pre_blunder_fen: Optional[str] = None,
                            blunder_type: Optional[str] = None) -> Dict[str, Any]:
         """Create a structured blunder data object.
         
@@ -255,6 +263,8 @@ class PositionAnalyzer:
             eval_change (int): The absolute change in evaluation.
             game_url (str): URL of the game.
             correct_move_uci (Optional[str], optional): The move that should have been played instead of the blunder. For reference only.
+            blundered_move_uci (Optional[str], optional): The blundered move in UCI notation for animation purposes.
+            pre_blunder_fen (Optional[str], optional): FEN of the position before the blunder.
             blunder_type (Optional[str], optional): Type of blunder. Defaults to None.
             
         Returns:
@@ -268,18 +278,21 @@ class PositionAnalyzer:
         
         return {
             "fen": post_blunder_fen,  # Position AFTER the blunder
+            "pre_blunder_fen": pre_blunder_fen,  # Position BEFORE the blunder
             "solution": [punishment_move_uci],  # Best move to punish the blunder
             "player_color": opponent_color,  # The puzzle is solved from the opponent's perspective
             "original_player_color": player_color,  # For reference
             "move_number": move_number,
             "blundered_move": blundered_move,
+            "blundered_move_uci": blundered_move_uci,  # Include UCI format for animation
             "correct_move": correct_move_uci,  # What should have been played instead (for reference)
             "eval_change": eval_change,
             "difficulty": difficulty,
             "difficulty_label": difficulty_label,
             "blunder_type": blunder_type,
             "game_url": game_url,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "show_solution_text": False  # Flag to prevent the widget from showing solution text
         }
         
     def save_position_evaluations(self, position_evaluations: List[Dict[str, Any]], game_id: str,
