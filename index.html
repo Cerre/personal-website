@@ -31,126 +31,129 @@
         <p>Feel free to explore my projects and get in touch if you'd like to collaborate!</p>
     </section>
 
-    <!-- Main content with adjusted wrapper -->
-    <div class="main-content-wrapper container">
-        <main class="main-content">
-            <!-- Projects section -->
-            <section class="projects">
-                <h2>Projects</h2>
-                <div class="project-container">
-                    <div class="project-grid">
-                        <!-- Sports Commentary Search Engine -->
-                        <div class="project-card">
-                            <h3>Sports Commentary Search Engine</h3>
-                            <div class="project-tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">Natural Language Processing</span>
-                                <span class="tag">Vector Database</span>
-                            </div>
-                            <div class="project-content">
-                                <div class="challenge">
-                                    <strong>Challenge:</strong> Create a search engine that allows users to find specific moments and highlights in sports livestreams and recordings based on commentary.
-                                </div>
-                                <div class="approach">
-                                    <strong>Approach:</strong> Developed a pipeline to process audio transcripts into searchable segments using vector embeddings and semantic search techniques, with a focus on sports terminology and context.
-                                </div>
-                                <div class="insights">
-                                    <strong>Technical Insights:</strong> Domain-specific fine-tuning improved accuracy; chunking strategies significantly impacted retrieval quality.
-                                </div>
-                                <a href="projects/rocket-league-video-search.html" class="case-study-link">View Case Study</a>
-                            </div>
-                        </div>
+    <!-- New layout with chess puzzle toggle above projects -->
+    <div class="container">
+        <!-- Chess puzzle toggle button -->
+        <div class="chess-puzzle-toggle">
+            <button id="toggleChessPuzzle" class="toggle-button">
+                <i class="fas fa-chess-knight"></i> Show Chess Puzzle Challenge
+            </button>
+        </div>
 
-                        <!-- Enhanced Finger Detection Algorithm -->
-                        <div class="project-card">
-                            <h3>Enhanced Finger Detection Algorithm</h3>
-                            <div class="project-tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">Computer Vision</span>
-                                <span class="tag">Machine Learning</span>
-                                <span class="tag">XGBoost</span>
-                            </div>
-                            <div class="project-content">
-                                <div class="challenge">
-                                    <strong>Challenge:</strong> Improve accuracy of finger detection in challenging conditions like low lighting and unusual hand orientations while maintaining computational efficiency.
-                                </div>
-                                <div class="approach">
-                                    <strong>Approach:</strong> Gathered targeted dataset across various conditions, engineered specific features, trained an XGBoost model, and optimized the system for domain-specific applications.
-                                </div>
-                                <div class="insights">
-                                    <strong>Technical Insights:</strong> Rotation invariant features significantly improved detection reliability. Thorough data cleaning and inspection was essential for effective feature engineering.
-                                </div>
-                                <a href="projects/project-2.html" class="case-study-link">View Case Study</a>
-                            </div>
-                        </div>
-
-                        <!-- Personal Website with Agentic LLM Tools -->
-                        <div class="project-card">
-                            <h3>Personal Website with Agentic LLM Tools</h3>
-                            <div class="project-tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">HTML/CSS</span>
-                                <span class="tag">LLM</span>
-                                <span class="tag">AI Agents</span>
-                            </div>
-                            <div class="project-content">
-                                <div class="challenge">
-                                    <strong>Challenge:</strong> Create a professional portfolio website to showcase technical expertise while experimenting with agentic LLM tools for development.
-                                </div>
-                                <div class="approach">
-                                    <strong>Approach:</strong> Leveraged AI agent capabilities to generate, structure, and refine web components while maintaining creative control over the design and content strategy.
-                                </div>
-                                <div class="insights">
-                                    <strong>Technical Insights:</strong> Discovered effective prompt engineering patterns for web development tasks. Learned to balance AI-generated content with human oversight for optimal results. Ventured beyond my established knowledge domain.
-                                </div>
-                                <a href="projects/project-3.html" class="case-study-link">View Case Study</a>
-                            </div>
+        <!-- Chess puzzle section (initially hidden) -->
+        <section id="chessPuzzleSection" class="chess-puzzle-section">
+            <h2>Chess Puzzle Challenge</h2>
+            <div class="chess-puzzle-container">
+                <div class="chess-board-container">
+                    <div id="chess-board" class="chess-board">
+                        <!-- Chess board will be rendered here by JavaScript -->
+                        <div class="chess-board-placeholder">
+                            <i class="fas fa-chess-knight"></i>
+                            <p>Loading my latest blunder...</p>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
+                <div class="chess-puzzle-info">
+                    <h3>Find the Best Response!</h3>
+                    <p>Watch as I make a blunder, then find the best response to punish it!</p>
+                    <div class="puzzle-details">
+                        <p><strong>Game:</strong> <span id="game-info">Rapid match on Chess.com</span></p>
+                        <p><strong>Position Evaluation:</strong> <span id="position-eval">-3.2</span></p>
+                        <p><strong>Difficulty:</strong> <span id="puzzle-difficulty">Intermediate</span></p>
+                        <p><strong>Turn to Move:</strong> <span id="turn-indicator">White</span></p>
+                    </div>
+                    <div class="puzzle-controls">
+                        <button id="show-solution" class="btn btn-primary">Show Solution</button>
+                        <button id="try-another" class="btn btn-secondary">Try Another</button>
+                    </div>
+                    <div id="solution-container" class="solution-container" style="display: none;">
+                        <h4>Solution</h4>
+                        <p id="solution-move">Qh4+ followed by Qxf2#</p>
+                        <p id="solution-explanation">This tactical sequence leads to checkmate in 2 moves. The queen sacrifice opens up the king position.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="puzzle-footer">
+                <p>Powered by a custom Python backend that analyzes my games using the Chess.com API and Stockfish engine</p>
+                <a href="https://github.com/Cerre/website" target="_blank" class="api-link">View the source code <i class="fab fa-github"></i></a>
+            </div>
+        </section>
 
-        <aside class="sidebar">
-            <!-- Chess puzzle section -->
-            <section class="chess-puzzle sidebar-widget">
-                <h2>Chess Puzzle Challenge</h2>
-                <div class="chess-puzzle-container">
-                    <div class="chess-board-container">
-                        <div id="chess-board" class="chess-board">
-                            <!-- Chess board will be rendered here by JavaScript -->
-                            <div class="chess-board-placeholder">
-                                <i class="fas fa-chess-knight"></i>
-                                <p>Loading my latest blunder...</p>
+        <!-- Projects section -->
+        <section class="projects">
+            <h2>Projects</h2>
+            <div class="project-container">
+                <div class="project-grid">
+                    <!-- Sports Commentary Search Engine -->
+                    <div class="project-card">
+                        <h3>Sports Commentary Search Engine</h3>
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Natural Language Processing</span>
+                            <span class="tag">Vector Database</span>
+                        </div>
+                        <div class="project-content">
+                            <div class="challenge">
+                                <strong>Challenge:</strong> Create a search engine that allows users to find specific moments and highlights in sports livestreams and recordings based on commentary.
                             </div>
+                            <div class="approach">
+                                <strong>Approach:</strong> Developed a pipeline to process audio transcripts into searchable segments using vector embeddings and semantic search techniques, with a focus on sports terminology and context.
+                            </div>
+                            <div class="insights">
+                                <strong>Technical Insights:</strong> Domain-specific fine-tuning improved accuracy; chunking strategies significantly impacted retrieval quality.
+                            </div>
+                            <a href="projects/rocket-league-video-search.html" class="case-study-link">View Case Study</a>
                         </div>
                     </div>
-                    <div class="chess-puzzle-info">
-                        <h3>Find the Best Response!</h3>
-                        <p>Watch as I make a blunder, then find the best response to punish it!</p>
-                        <div class="puzzle-details">
-                            <p><strong>Game:</strong> <span id="game-info">Rapid match on Chess.com</span></p>
-                            <p><strong>Position Evaluation:</strong> <span id="position-eval">-3.2</span></p>
-                            <p><strong>Difficulty:</strong> <span id="puzzle-difficulty">Intermediate</span></p>
-                            <p><strong>Turn to Move:</strong> <span id="turn-indicator">White</span></p>
+
+                    <!-- Enhanced Finger Detection Algorithm -->
+                    <div class="project-card">
+                        <h3>Enhanced Finger Detection Algorithm</h3>
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Computer Vision</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">XGBoost</span>
                         </div>
-                        <div class="puzzle-controls">
-                            <button id="show-solution" class="btn btn-primary">Show Solution</button>
-                            <button id="try-another" class="btn btn-secondary">Try Another</button>
+                        <div class="project-content">
+                            <div class="challenge">
+                                <strong>Challenge:</strong> Improve accuracy of finger detection in challenging conditions like low lighting and unusual hand orientations while maintaining computational efficiency.
+                            </div>
+                            <div class="approach">
+                                <strong>Approach:</strong> Gathered targeted dataset across various conditions, engineered specific features, trained an XGBoost model, and optimized the system for domain-specific applications.
+                            </div>
+                            <div class="insights">
+                                <strong>Technical Insights:</strong> Rotation invariant features significantly improved detection reliability. Thorough data cleaning and inspection was essential for effective feature engineering.
+                            </div>
+                            <a href="projects/project-2.html" class="case-study-link">View Case Study</a>
                         </div>
-                        <div id="solution-container" class="solution-container" style="display: none;">
-                            <h4>Solution</h4>
-                            <p id="solution-move">Qh4+ followed by Qxf2#</p>
-                            <p id="solution-explanation">This tactical sequence leads to checkmate in 2 moves. The queen sacrifice opens up the king position.</p>
+                    </div>
+
+                    <!-- Personal Website with Agentic LLM Tools -->
+                    <div class="project-card">
+                        <h3>Personal Website with Agentic LLM Tools</h3>
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">HTML/CSS</span>
+                            <span class="tag">LLM</span>
+                            <span class="tag">AI Agents</span>
+                        </div>
+                        <div class="project-content">
+                            <div class="challenge">
+                                <strong>Challenge:</strong> Create a professional portfolio website to showcase technical expertise while experimenting with agentic LLM tools for development.
+                            </div>
+                            <div class="approach">
+                                <strong>Approach:</strong> Leveraged AI agent capabilities to generate, structure, and refine web components while maintaining creative control over the design and content strategy.
+                            </div>
+                            <div class="insights">
+                                <strong>Technical Insights:</strong> Discovered effective prompt engineering patterns for web development tasks. Learned to balance AI-generated content with human oversight for optimal results. Ventured beyond my established knowledge domain.
+                            </div>
+                            <a href="projects/project-3.html" class="case-study-link">View Case Study</a>
                         </div>
                     </div>
                 </div>
-                <div class="puzzle-footer">
-                    <p>Powered by a custom Python backend that analyzes my games using the Chess.com API and Stockfish engine</p>
-                    <a href="https://github.com/Cerre/website" target="_blank" class="api-link">View the source code <i class="fab fa-github"></i></a>
-                </div>
-            </section>
-        </aside>
+            </div>
+        </section>
     </div>
 
     <section class="social container">

@@ -116,81 +116,245 @@ section h2:after {
     color: #60a5fa;  /* Lighter icon color for better contrast */
 }
 
-/* Project Grid */
+/* Project Grid - updated for portrait layout */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .project-card {
-    background-color: var(--card-bg-color);
+    background-color: #fff;
     border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);  /* Darker shadow */
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .project-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: #93c5fd; /* Light blue highlight for project titles */
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: #333;
 }
 
 .project-tags {
-    font-size: 0.9rem;
-    color: #9ca3af; /* Subtle gray for tags */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 1rem;
-    font-style: italic;
 }
 
-.project-content {
-    margin-bottom: 1.2rem;
-}
-
-.project-content p {
-    margin-bottom: 0.8rem;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.project-content strong {
-    color: #93c5fd; /* Light blue for highlighted terms */
+.tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
-.project-links {
+.project-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.challenge, .approach, .insights {
+    margin-bottom: 0.75rem;
+}
+
+.case-study-link {
+    display: inline-block;
+    margin-top: auto;
+    padding: 0.5rem 1rem;
+    background-color: #3b82f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.case-study-link:hover {
+    background-color: #2563eb;
+}
+
+/* Chess puzzle toggle and section styles */
+.chess-puzzle-toggle {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.toggle-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toggle-button:hover {
+    background-color: #2563eb;
+}
+
+.toggle-button i {
+    font-size: 1.25rem;
+}
+
+.chess-puzzle-section {
+    display: none;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chess-puzzle-section.active {
+    display: block;
+}
+
+.chess-puzzle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .chess-puzzle-container {
+        flex-direction: row;
+    }
+    
+    .chess-board-container {
+        flex: 1;
+    }
+    
+    .chess-puzzle-info {
+        flex: 1;
+    }
+}
+
+.chess-board {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #f0d9b5;
+    border: 3px solid #8b4513;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chess-board-placeholder {
+    text-align: center;
+    color: #8b4513;
+}
+
+.chess-board-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.puzzle-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+.puzzle-controls {
     display: flex;
     gap: 1rem;
+    margin: 1rem 0;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-secondary {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn-secondary:hover {
+    background-color: #dee2e6;
+}
+
+.solution-container {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
     margin-top: 1rem;
 }
 
-.project-links a {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 0.25rem;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
+.puzzle-footer {
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.api-link {
     display: inline-block;
+    margin-top: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
 }
 
-.project-links a.case-study-link {
-    background-color: #4f46e5; /* Different color for case study links */
+.api-link:hover {
+    text-decoration: underline;
 }
 
-.project-links a:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.project-links a.case-study-link:hover {
-    background-color: #6366f1; /* Lighter purple on hover */
+@media (max-width: 768px) {
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chess-puzzle-container {
+        flex-direction: column;
+    }
 }
 
 /* Footer */
@@ -202,22 +366,16 @@ section h2:after {
     margin-top: 2rem;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .name {
-        font-size: 2.5rem;
+/* Media queries for project grid responsiveness */
+@media (max-width: 1200px) {
+    .project-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    
+}
+
+@media (max-width: 768px) {
     .project-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .social-links {
-        gap: 1rem;
-    }
-    
-    .social-link {
-        min-width: 100px;
     }
 }
 
@@ -510,24 +668,87 @@ section h2:after {
     100% { opacity: 0; }
 }
 
-/* Two-column layout styles */
+/* Chess puzzle toggle functionality */
+.chess-puzzle-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0 2rem;
+}
+
+.toggle-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toggle-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.toggle-button i {
+    transition: transform 0.3s ease;
+}
+
+.toggle-button.active i {
+    transform: rotate(180deg);
+}
+
+.chess-puzzle-section {
+    display: none; /* Initially hidden */
+    margin-bottom: 3rem;
+    background-color: var(--card-bg-color);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.chess-puzzle-section.active {
+    display: block;
+}
+
+/* Move sidebar styles to the chess puzzle section */
+.chess-puzzle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+@media (min-width: 992px) {
+    .chess-puzzle-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    
+    .chess-board-container {
+        flex: 1;
+        max-width: 400px;
+    }
+    
+    .chess-puzzle-info {
+        flex: 1;
+    }
+}
+
+/* Revise the main content layout */
 .main-content-wrapper {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    gap: 3rem;
+    display: block; /* Change from grid to block */
     margin-bottom: 2rem;
-    align-items: flex-start;
 }
 
 .main-content {
     width: 100%;
-    padding-right: 1rem;
-}
-
-.sidebar {
-    width: 100%;
-    position: sticky;
-    top: 2rem;
+    padding-right: 0;
 }
 
 /* Sidebar widget styles */
