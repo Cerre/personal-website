@@ -157,13 +157,24 @@ def fetch_lichess_games(limit=MAX_GAMES):
             "rated": "true",        # Only rated games
             "perfType": "blitz,rapid,classical", # Focus on standard time controls
             "ongoing": "false",     # Exclude games in progress
-            "lastFen": "true"       # Include FEN of final position
+            "finished": "true",     # Only include finished games
+            "sort": "dateDesc",     # Latest games first (default, but being explicit)
+            "moves": "true",        # Include the PGN moves
+            "tags": "true",         # Include the PGN tags
+            "opening": "true",      # Include opening information
+            "clocks": "false",      # Skip clock information to reduce size
+            "evals": "false"        # Skip evaluation data as we'll do our own analysis
         }
         
         print(f"DEBUG: Fetching {limit} rated games for user {USERNAME}...")
         print(f"DEBUG: Request URL: {LICHESS_GAMES_URL} with params: {params}")
         
-        response = requests.get(LICHESS_GAMES_URL, params=params)
+        # Set Accept header for PGN format
+        headers = {
+            "Accept": "application/x-chess-pgn"
+        }
+        
+        response = requests.get(LICHESS_GAMES_URL, params=params, headers=headers)
         response.raise_for_status()
         
         # Debug: print raw response 
@@ -172,67 +183,84 @@ def fetch_lichess_games(limit=MAX_GAMES):
             print(f"DEBUG: Response headers: {response.headers}")
             print(f"DEBUG: Response content snippet: {response.text[:500]}...")
         
-        # Split PGN data into individual games
+        # Split PGN data into individual games in a more systematic way
         pgn_content = response.text
         
-        # Split the PGN text into individual games (games are separated by blank lines)
-        pgn_games = []
-        current_game = []
+        # First, split by blank lines to separate games
+        raw_games = re.split(r'\n\n\n+', pgn_content.strip())
+        print(f"DEBUG: Split into {len(raw_games)} raw games")
         
-        for line in pgn_content.split('\n'):
-            if line.strip():  # If line is not empty
-                current_game.append(line)
-            elif current_game:  # Empty line and we have game data
-                pgn_games.append('\n'.join(current_game))
-                current_game = []
-        
-        # Add the last game if there is one
-        if current_game:
-            pgn_games.append('\n'.join(current_game))
-            
-        print(f"DEBUG: Split into {len(pgn_games)} PGN games")
-        
-        # Parse each game to extract metadata and create a game object
         games = []
-        for pgn_text in pgn_games:
+        
+        # Process each game
+        for raw_game in raw_games:
+            if not raw_game.strip():
+                continue  # Skip empty entries
+                
             try:
-                # Extract game ID and site from the PGN
-                game_id = None
-                game_url = None
+                # Complete PGN text for this game
+                pgn_text = raw_game.strip()
                 
-                # Look for Site tag
-                site_match = re.search(r'\[Site "([^"]+)"\]', pgn_text)
-                if site_match:
-                    game_url = site_match.group(1)
-                    game_id = game_url.split('/')[-1]
+                # Create a dictionary to store game data
+                game_data = {'pgn': pgn_text}
                 
-                # If no Site tag, look for GameId tag
-                if not game_id:
-                    game_id_match = re.search(r'\[GameId "([^"]+)"\]', pgn_text)
-                    if game_id_match:
-                        game_id = game_id_match.group(1)
-                        game_url = f"https://lichess.org/{game_id}"
-                
-                # Create a game object
-                game = {
-                    'id': game_id,
-                    'url': game_url,
-                    'pgn': pgn_text,
-                    # Count moves by splitting on move numbers (like "1. e4")
-                    'moves': ' '.join([line for line in pgn_text.split('\n') if not line.startswith('[')])
+                # Extract headers using regex
+                # Common headers we need
+                header_patterns = {
+                    'id': r'\[GameId "([^"]+)"\]',
+                    'site': r'\[Site "([^"]+)"\]',
+                    'white': r'\[White "([^"]+)"\]',
+                    'black': r'\[Black "([^"]+)"\]',
+                    'result': r'\[Result "([^"]+)"\]',
+                    'date': r'\[Date "([^"]+)"\]',
+                    'time_control': r'\[TimeControl "([^"]+)"\]',
+                    'termination': r'\[Termination "([^"]+)"\]',
                 }
                 
-                games.append(game)
+                # Extract all headers at once
+                for key, pattern in header_patterns.items():
+                    match = re.search(pattern, pgn_text)
+                    if match:
+                        game_data[key] = match.group(1)
                 
-                # Print debug info about the first game
-                if DEBUG and len(games) == 1:
-                    print("\nDEBUG: Example of first game data:")
-                    print(f"  Game ID: {game.get('id')}")
-                    print(f"  Game URL: {game.get('url')}")
-                    print(f"  PGN length: {len(pgn_text)}")
-                    print(f"  PGN snippet: {pgn_text[:200]}...")
-                    print(f"  Move data snippet: {game.get('moves')[:100]}...")
+                # Make sure we have the essential data
+                if 'site' in game_data:
+                    # For Lichess, the game URL is the Site value
+                    game_data['url'] = game_data['site']
+                elif 'id' in game_data:
+                    # If we have a GameId but no Site, construct the URL
+                    game_data['url'] = f"https://lichess.org/{game_data['id']}"
                 
+                # Extract the moves text (excluding headers)
+                moves_pattern = r'\]\s*\n\s*\n([\s\S]+)$'
+                moves_match = re.search(moves_pattern, pgn_text)
+                if moves_match:
+                    game_data['moves'] = moves_match.group(1).strip()
+                else:
+                    # Fallback: get all lines that don't start with [
+                    game_data['moves'] = '\n'.join([
+                        line for line in pgn_text.split('\n') 
+                        if line.strip() and not line.strip().startswith('[')
+                    ])
+                
+                # Double-check we have required fields
+                if 'white' in game_data and 'black' in game_data and 'moves' in game_data:
+                    # Add the game to our list
+                    games.append(game_data)
+                    
+                    # Print debug info about the first game
+                    if DEBUG and len(games) == 1:
+                        print("\nDEBUG: Example of first game data:")
+                        print(f"  Game ID: {game_data.get('id')}")
+                        print(f"  Game URL: {game_data.get('url')}")
+                        print(f"  White Player: {game_data.get('white')}")
+                        print(f"  Black Player: {game_data.get('black')}")
+                        print(f"  PGN length: {len(pgn_text)}")
+                        print(f"  PGN snippet: {pgn_text[:200]}...")
+                        print(f"  Move data snippet: {game_data.get('moves')[:100]}...")
+                else:
+                    print(f"DEBUG: Skipping game because it's missing required fields: {game_data.keys()}")
+            
             except Exception as e:
                 print(f"DEBUG: Error parsing PGN game: {e}")
                 traceback.print_exc()
@@ -240,15 +268,14 @@ def fetch_lichess_games(limit=MAX_GAMES):
         print(f"DEBUG: Successfully parsed {len(games)} games from Lichess")
         
         # Filter out games with less than 10 moves
-        # Count moves by looking for move numbers in the PGN (e.g., "1. e4 e5 2. Nf3")
         move_count_threshold = 10
         filtered_games = []
         
         for game in games:
-            # Simple heuristic: count the number of dots (.) in the moves line to estimate move count
-            # Each move number like "1." has a dot, so if we find more than 10 dots, it likely has >10 moves
-            moves_line = game.get('moves', '')
-            move_numbers = [word for word in moves_line.split() if word.endswith('.')]
+            # Count moves by looking for move numbers in the moves text
+            moves_text = game.get('moves', '')
+            # Each move number like "1." has a dot, so count those
+            move_numbers = [word for word in moves_text.split() if word.endswith('.')]
             move_count = len(move_numbers)
             
             if move_count >= move_count_threshold:
@@ -283,6 +310,9 @@ def get_game_url(game_data, platform):
     """Extract the game URL from game data."""
     if isinstance(game_data, dict):
         # Handle dictionary format
+        if 'url' in game_data and game_data['url']:
+            return game_data['url']
+            
         if 'pgn' in game_data:
             # Extract from PGN text inside the dictionary
             pgn_text = game_data['pgn']
@@ -297,13 +327,10 @@ def get_game_url(game_data, platform):
                 return f"https://lichess.org/{game_id_match.group(1)}"
                 
         # Direct keys in the dictionary
-        if 'url' in game_data:
-            # For Chess.com games
-            return game_data['url']
-        elif 'site' in game_data:
+        if 'site' in game_data and game_data['site']:
             # For Lichess games
             return game_data['site']
-        elif 'id' in game_data and platform == "lichess":
+        elif 'id' in game_data and game_data['id'] and platform == "lichess":
             # Use game_id if available
             return f"https://lichess.org/{game_data['id']}"
     
@@ -341,9 +368,9 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
     """Analyze a game for blunders and generate puzzles."""
     try:
         # Extract game URL directly from the game_data dict
-        game_url = None
-        if isinstance(game_data, dict) and 'url' in game_data:
-            game_url = game_data['url']
+        game_url = get_game_url(game_data, platform)
+                    
+        print(f"Analyzing game {game_url}")
         
         # Get the PGN text
         pgn = get_pgn_from_game(game_data, platform)
@@ -368,8 +395,38 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
             print(f"Warning: Could not parse PGN for game {game_url}")
             return []
         
+        # Modified PGN parsing to ensure headers are properly set
         pgn_io = io.StringIO(pgn)
+        
+        # Before parsing the game, check if this is a newer format PGN with headers at the top
+        # Extract the headers manually if needed
+        pgn_headers = {}
+        
+        # Extract known headers from the PGN text using regex
+        white_match = re.search(r'\[White "([^"]+)"\]', pgn)
+        black_match = re.search(r'\[Black "([^"]+)"\]', pgn)
+        
+        if white_match:
+            pgn_headers['White'] = white_match.group(1)
+        
+        if black_match:
+            pgn_headers['Black'] = black_match.group(1)
+            
+        # Parse the game
         game = chess.pgn.read_game(pgn_io)
+        
+        if not game:
+            print(f"Warning: Could not parse PGN for game {game_url}")
+            return []
+            
+        # If we have manually extracted headers, use them to supplement the game headers
+        if pgn_headers:
+            # Update game headers with our extracted values
+            for header, value in pgn_headers.items():
+                game.headers[header] = value
+                
+            if DEBUG:
+                print(f"DEBUG: Updated game headers using extracted values: {game.headers}")
         
         if DEBUG:
             print(f"DEBUG: Game URL: {game_url}")
@@ -380,12 +437,21 @@ def analyze_game(game_data, stockfish_path=None, blunder_threshold=80, platform=
             print(f"DEBUG: Successfully parsed game PGN for {game_url}")
             print(f"DEBUG: Game headers: {game.headers}")
         
-        if not game:
-            print(f"Warning: Could not parse PGN for game {game_url}")
-            return []
-        
         blunders = []
         board = game.board()
+        
+        # If we don't have proper headers in the game object, get them from the game_data if available
+        if ('White' not in game.headers or 'Black' not in game.headers or 
+            game.headers['White'] == '?' or game.headers['Black'] == '?'):
+            
+            if isinstance(game_data, dict):
+                # Use values from the parsed game object
+                if 'white' in game_data and game_data['white']:
+                    game.headers['White'] = game_data['white']
+                if 'black' in game_data and game_data['black']:
+                    game.headers['Black'] = game_data['black']
+                    
+                print(f"DEBUG: Updated headers from game_data: White={game.headers.get('White')}, Black={game.headers.get('Black')}")
         
         # Determine which color Toxima is playing
         toxima_color = None
@@ -581,17 +647,85 @@ def main():
     # Process each game
     for i, game in enumerate(games):
         print(f"\nDEBUG: Processing game {i+1} of {len(games)}")
+        print(f"DEBUG: Game data: id={game.get('id')}, url={game.get('url')}")
+        print(f"DEBUG: Players: White={game.get('white')}, Black={game.get('black')}")
         
-        # Get the PGN text and game URL
+        # Determine player color directly here
+        player_color = None
+        white_player = game.get('white', '')
+        black_player = game.get('black', '')
+        
+        # Handle None values in player names
+        if white_player is None:
+            white_player = ''
+        if black_player is None:
+            black_player = ''
+            
+        if white_player.lower() == USERNAME.lower():
+            player_color = chess.WHITE
+            print(f"DEBUG: {USERNAME} is playing as WHITE")
+        elif black_player.lower() == USERNAME.lower():
+            player_color = chess.BLACK
+            print(f"DEBUG: {USERNAME} is playing as BLACK")
+        else:
+            print(f"WARNING: Could not determine {USERNAME}'s color from game data")
+            print(f"DEBUG: Game white player: '{white_player}', black player: '{black_player}'")
+            
+            # Try another approach - extract from raw PGN
+            pgn_text = game.get('pgn', '')
+            if pgn_text:
+                print("Trying to extract player names from raw PGN...")
+                white_match = re.search(r'\[White "([^"]+)"\]', pgn_text)
+                black_match = re.search(r'\[Black "([^"]+)"\]', pgn_text)
+                
+                white_from_pgn = white_match.group(1) if white_match else None
+                black_from_pgn = black_match.group(1) if black_match else None
+                
+                print(f"Extracted from PGN: White='{white_from_pgn}', Black='{black_from_pgn}'")
+                
+                if white_from_pgn and white_from_pgn.lower() == USERNAME.lower():
+                    player_color = chess.WHITE
+                    print(f"DEBUG: {USERNAME} is playing as WHITE (from PGN)")
+                elif black_from_pgn and black_from_pgn.lower() == USERNAME.lower():
+                    player_color = chess.BLACK
+                    print(f"DEBUG: {USERNAME} is playing as BLACK (from PGN)")
+                else:
+                    print(f"Still unable to determine player color")
+                    continue  # Skip this game
+            else:
+                continue  # Skip this game if no player color found
+            
+        # Get the PGN text
         pgn_text = game.get('pgn', '')
-        game_url = game.get('url', 'Unknown game URL')
+        
+        # Get game URL - try multiple sources
+        game_url = game.get('url')
+        if not game_url:
+            # Try to extract from site field
+            game_url = game.get('site')
+            
+        if not game_url and game.get('id'):
+            # Construct URL from game ID if available
+            game_url = f"https://lichess.org/{game.get('id')}"
+        
+        if not game_url:
+            # Last resort - extract from PGN
+            site_match = re.search(r'\[Site "([^"]+)"\]', pgn_text)
+            if site_match:
+                game_url = site_match.group(1)
+                game['url'] = game_url  # Store it for later use
         
         print(f"DEBUG: Lichess PGN length: {len(pgn_text)}")
-        print(f"DEBUG: PGN snippet: {pgn_text[:100]}...")
-        print(f"Analyzing game {game_url}")
+        print(f"DEBUG: Game URL: {game_url}")
         
-        # Analyze the game
-        game_blunders = analyze_game(game, stockfish_path=stockfish_path, blunder_threshold=BLUNDER_THRESHOLD, platform="lichess")
+        # Custom simplified analysis that knows the player color upfront
+        game_blunders = analyze_game_simple(
+            pgn_text=pgn_text, 
+            game_url=game_url, 
+            toxima_color=player_color, 
+            stockfish_path=stockfish_path, 
+            blunder_threshold=BLUNDER_THRESHOLD
+        )
         
         # Add blunders to the list of puzzles
         if game_blunders:
@@ -633,6 +767,124 @@ def main():
         json.dump(output, f, indent=2)
     
     print(f"Saved {len(output['puzzles'])} puzzles to {OUTPUT_FILE}")
+
+def analyze_game_simple(pgn_text, game_url=None, toxima_color=None, stockfish_path=None, blunder_threshold=80):
+    """Simplified game analysis that already knows the player color."""
+    try:
+        if not pgn_text:
+            print(f"Warning: Empty PGN for game {game_url}")
+            return []
+            
+        if toxima_color is None:
+            print(f"Warning: Player color not provided for game {game_url}")
+            return []
+            
+        print(f"Analyzing game {game_url}")
+        print(f"Player color is {'WHITE' if toxima_color == chess.WHITE else 'BLACK'}")
+        
+        # Parse PGN
+        pgn_io = io.StringIO(pgn_text)
+        game = chess.pgn.read_game(pgn_io)
+        
+        if not game:
+            print(f"Warning: Could not parse PGN for game {game_url}")
+            return []
+        
+        blunders = []
+        board = game.board()
+        
+        # Initialize Stockfish engine
+        try:
+            engine = chess.engine.SimpleEngine.popen_uci(stockfish_path)
+        except Exception as e:
+            print(f"ERROR: Failed to initialize Stockfish engine: {e}")
+            traceback.print_exc()
+            return []
+        
+        try:
+            # Process each move
+            node = game.next()
+            move_number = 1
+            moves_analyzed = 0
+            
+            print(f"Analyzing game {game_url}")
+            
+            while node:
+                try:
+                    # Only check for blunders when it's Toxima's turn
+                    is_toxima_turn = (board.turn == toxima_color)
+                    
+                    # Get position before the move
+                    prev_fen = board.fen()
+                    
+                    # Debug: evaluate current position
+                    if DEBUG and moves_analyzed < 3:  # Only debug first few moves to avoid too much output
+                        print(f"DEBUG: Evaluating position at move {move_number}, FEN: {prev_fen}")
+                    
+                    prev_eval = engine.analyse(board, chess.engine.Limit(time=0.1))["score"].relative.score(mate_score=10000)
+                    
+                    # Make the move
+                    move = node.move
+                    san_move = board.san(move)
+                    board.push(move)
+                    
+                    # Debug: show move being analyzed
+                    if DEBUG and moves_analyzed < 3:
+                        print(f"DEBUG: Made move {san_move}, analyzing new position")
+                    
+                    # Evaluate new position
+                    curr_eval = -engine.analyse(board, chess.engine.Limit(time=0.1))["score"].relative.score(mate_score=10000)
+                    
+                    # Calculate evaluation change
+                    eval_change = prev_eval - curr_eval
+                    
+                    if DEBUG and moves_analyzed < 3:
+                        print(f"DEBUG: Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
+                    
+                    # Check if move is a blunder and it was Toxima's turn
+                    # A true blunder is when a player in a good/even position makes a move
+                    # that significantly worsens their position
+                    if is_toxima_turn and eval_change >= blunder_threshold and prev_eval >= 0:
+                        player = "white" if toxima_color == chess.WHITE else "black"
+                        blunder = {
+                            "fen": prev_fen,
+                            "solution": [move.uci()],
+                            "player_color": player,
+                            "move_number": move_number,
+                            "blundered_move": san_move,
+                            "eval_change": eval_change,
+                            "difficulty": calculate_difficulty(eval_change),
+                            "game_url": game_url
+                        }
+                        blunders.append(blunder)
+                        print(f"  Found blunder by {USERNAME}: move {move_number}, {san_move}, eval change: {eval_change}, prev_eval: {prev_eval}, curr_eval: {curr_eval}")
+                    
+                    # Move to the next node
+                    node = node.next()
+                    moves_analyzed += 1
+                    if board.turn == chess.WHITE:
+                        move_number += 1
+                    
+                except Exception as e:
+                    print(f"ERROR during move analysis: {e}")
+                    traceback.print_exc()
+                    node = node.next()  # Skip problematic move
+                    if board.turn == chess.WHITE:
+                        move_number += 1
+            
+            print(f"DEBUG: Completed analysis, analyzed {moves_analyzed} moves, found {len(blunders)} blunders by {USERNAME}")
+            
+        except Exception as e:
+            print(f"ERROR during game analysis: {e}")
+            traceback.print_exc()
+        finally:
+            engine.quit()
+        
+        return blunders
+    except Exception as e:
+        print(f"Error analyzing game: {e}")
+        traceback.print_exc()
+        return []
 
 if __name__ == "__main__":
     main() 
