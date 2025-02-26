@@ -1,23 +1,23 @@
 {
   "puzzles": [
     {
-      "fen": "r4rk1/pb2bppp/1pnq1n2/3pp3/1PP5/P3PNP1/1B2NPBP/R2Q1RK1 b - - 0 14",
+      "fen": "r4rk1/pb2bppp/1pn2n2/2qpp3/1PP5/P3PNP1/1B2NPBP/R2Q1RK1 w - - 1 15",
       "solution": [
-        "a8d8"
+        "b4c5"
       ],
-      "player_color": "black",
-      "move_number": 14,
+      "player_color": "white",
+      "move_number": 15,
       "blundered_move": "Qc5",
       "eval_change": 676,
-      "difficulty": 4,
-      "difficulty_label": "Challenging",
+      "difficulty": 1,
+      "difficulty_label": "Very Easy",
       "blunder_type": "moderate_mistake",
-      "game_url": "local_pgn_0",
-      "timestamp": "2025-02-26T11:00:31.853677"
+      "game_url": "https://lichess.org/DUtHFY67",
+      "timestamp": "2025-02-26T11:10:00.000000"
     }
   ],
   "count": 1,
-  "generated_at": "2025-02-26T11:00:32.262757",
+  "generated_at": "2025-02-26T11:10:00.000000",
   "username": "Toxima",
   "platform": "lichess"
 }
