@@ -5,20 +5,21 @@
       "solution": [
         "b4c5"
       ],
-      "last_move": "d6c5",
       "player_color": "white",
-      "move_number": 15,
+      "original_player_color": "black",
+      "move_number": 14,
       "blundered_move": "Qc5",
-      "eval_change": 676,
-      "difficulty": 1,
-      "difficulty_label": "Very Easy",
-      "blunder_type": "moderate_mistake",
+      "correct_move": "e5e4",
+      "eval_change": 677,
+      "difficulty": 4,
+      "difficulty_label": "Challenging",
+      "blunder_type": "blunder",
       "game_url": "https://lichess.org/DUtHFY67",
-      "timestamp": "2025-02-26T11:10:00.000000"
+      "timestamp": "2025-02-26T12:35:01.163167"
     }
   ],
   "count": 1,
-  "generated_at": "2025-02-26T11:10:00.000000",
+  "generated_at": "2025-02-26T12:35:13.024564",
   "username": "Toxima",
   "platform": "lichess"
 }
