@@ -3,6 +3,7 @@ Helper utility functions for the chess puzzles generator.
 """
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 from datetime import datetime

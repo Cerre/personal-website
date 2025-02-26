@@ -100,7 +100,13 @@ class PositionAnalyzer:
                 prev_fen = board.fen()
                 
                 # Evaluate current position 
-                prev_eval = self.engine.evaluate_position(board, time_limit=time_limit)
+                initial_eval = self.engine.evaluate_position(board, time_limit=time_limit)
+                # Handle case when engine evaluation returns None
+                if initial_eval is None:
+                    logger.warning(f"Engine returned None evaluation for position before move {move_number}")
+                    prev_eval = 0
+                else:
+                    prev_eval = initial_eval
                 
                 # Save the board before making the move
                 prev_position_board = board.copy()
@@ -111,7 +117,13 @@ class PositionAnalyzer:
                 board.push(move)
                 
                 # Evaluate new position
-                curr_eval = -self.engine.evaluate_position(board, time_limit=time_limit)
+                new_eval = self.engine.evaluate_position(board, time_limit=time_limit)
+                # Handle case when engine evaluation returns None
+                if new_eval is None:
+                    logger.warning(f"Engine returned None evaluation at move {move_number}.{san_move}")
+                    curr_eval = 0
+                else:
+                    curr_eval = -new_eval
                 
                 # Calculate evaluation change
                 eval_change = prev_eval - curr_eval
@@ -342,8 +354,10 @@ class PositionAnalyzer:
             }
         }
         
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        # Ensure directory exists, but only if output_file has a directory part
+        dir_name = os.path.dirname(output_file)
+        if dir_name:  # Only try to create the directory if it's not empty
+            os.makedirs(dir_name, exist_ok=True)
         
         with open(output_file, 'w') as f:
             json.dump(output, f, indent=2)
