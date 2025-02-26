@@ -54,54 +54,24 @@ class BlunderDetector:
         Returns:
             Tuple[bool, Optional[str]]: (is_blunder, blunder_type) - Whether it's a blunder and what type.
         """
-        # Basic criteria common to all strictness levels
-        is_initial_equal = self.equal_range[0] <= prev_eval <= self.equal_range[1]
+        # Simplified blunder detection logic:
+        # 1. Initial position must be roughly equal (-200 to 200)
+        is_initial_equal = -200 <= prev_eval <= 200
         
-        is_result_terrible = (player_color == chess.WHITE and curr_eval < -self.terrible_threshold) or \
-                            (player_color == chess.BLACK and curr_eval > self.terrible_threshold)
-                            
-        # Evaluation change (positive means position got worse)
+        # 2. Evaluation change must be significant (at least 500 points)
+        # For white, negative change is bad; for black, positive change is bad
         eval_change = prev_eval - curr_eval
         
-        # For strict and standard modes, use the original logic
-        if self.strictness in ["strict", "standard"]:
-            if is_initial_equal and is_result_terrible:
-                return True, "major_blunder"
-            return False, None
+        # 3. Check if it's a blunder based on player color and eval change
+        is_blunder_detected = False
+        if is_initial_equal:
+            if player_color == chess.WHITE and eval_change <= -500:
+                is_blunder_detected = True
+            elif player_color == chess.BLACK and eval_change >= 500:
+                is_blunder_detected = True
         
-        # Additional criteria for relaxed and all modes
-        significant_change = abs(eval_change) >= 800
-        moderate_change = abs(eval_change) >= 500 and abs(prev_eval) <= 300
-        
-        # Position reversal (from advantage to disadvantage)
-        position_reversal = (player_color == chess.WHITE and prev_eval > 300 and curr_eval < -300) or \
-                            (player_color == chess.BLACK and prev_eval < -300 and curr_eval > 300)
-        
-        # For 'all' mode, include even smaller mistakes
-        if self.strictness == "all":
-            small_mistake = abs(eval_change) >= 300 and abs(prev_eval) <= 200
-            
-            if is_initial_equal and is_result_terrible:
-                return True, "major_blunder"
-            elif significant_change:
-                return True, "significant_mistake"
-            elif position_reversal:
-                return True, "position_reversal"
-            elif moderate_change:
-                return True, "moderate_mistake"
-            elif small_mistake:
-                return True, "small_mistake"
-        
-        # For 'relaxed' mode
-        elif self.strictness == "relaxed":
-            if is_initial_equal and is_result_terrible:
-                return True, "major_blunder"
-            elif significant_change:
-                return True, "significant_mistake"
-            elif position_reversal:
-                return True, "position_reversal"
-            elif moderate_change:
-                return True, "moderate_mistake"
+        if is_blunder_detected:
+            return True, "blunder"
         
         return False, None
         

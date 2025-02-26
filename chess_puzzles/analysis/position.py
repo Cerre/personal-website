@@ -93,51 +93,54 @@ class PositionAnalyzer:
         
         while node:
             try:
-                # Only check for blunders when it's player's turn
+                # Only analyze when it's player's turn
                 is_player_turn = (board.turn == player_color)
                 
-                # Get position before the move
-                prev_fen = board.fen()
-                
-                # Evaluate current position 
-                initial_eval = self.engine.evaluate_position(board, time_limit=time_limit)
-                # Handle case when engine evaluation returns None
-                if initial_eval is None:
-                    logger.warning(f"Engine returned None evaluation for position before move {move_number}")
-                    prev_eval = 0
-                else:
-                    prev_eval = initial_eval
-                
-                # Save the board before making the move
-                prev_position_board = board.copy()
-                
-                # Make the move
-                move = node.move
-                san_move = board.san(move)
-                board.push(move)
-                
-                # Evaluate new position
-                new_eval = self.engine.evaluate_position(board, time_limit=time_limit)
-                # Handle case when engine evaluation returns None
-                if new_eval is None:
-                    logger.warning(f"Engine returned None evaluation at move {move_number}.{san_move}")
-                    curr_eval = 0
-                else:
-                    curr_eval = -new_eval
-                
-                # Calculate evaluation change
-                eval_change = prev_eval - curr_eval
-                
-                if verbose and moves_analyzed < 3:
-                    logger.info(f"Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
-                
-                # Check if it's a blunder
-                is_blunder, blunder_type = self.blunder_detector.is_blunder(prev_eval, curr_eval, player_color)
-                is_blunder_move = is_player_turn and is_blunder
-                
-                # Log position evaluation if this is player's move or if we're logging all evaluations
-                if is_player_turn or config.LOG_ALL_EVALUATIONS:
-                    player_turn = "white" if board.turn == chess.BLACK else "black"  # The player who just moved
+                if is_player_turn:
+                    # Get position before the move
+                    prev_fen = board.fen()
+                    
+                    # Evaluate current position 
+                    initial_eval = self.engine.evaluate_position(board, time_limit=time_limit)
+                    # Handle case when engine evaluation returns None
+                    if initial_eval is None:
+                        logger.warning(f"Engine returned None evaluation for position before move {move_number}")
+                        prev_eval = 0
+                    else:
+                        prev_eval = initial_eval
+                    
+                    # Save the board before making the move
+                    prev_position_board = board.copy()
+                    
+                    # Make the move
+                    move = node.move
+                    san_move = board.san(move)
+                    board.push(move)
+                    
+                    # Save the position after the blunder
+                    post_blunder_fen = board.fen()
+                    post_blunder_board = board.copy()
+                    
+                    # Evaluate new position
+                    new_eval = self.engine.evaluate_position(board, time_limit=time_limit)
+                    # Handle case when engine evaluation returns None
+                    if new_eval is None:
+                        logger.warning(f"Engine returned None evaluation at move {move_number}.{san_move}")
+                        curr_eval = 0
+                    else:
+                        curr_eval = -new_eval
+                    
+                    # Calculate evaluation change
+                    eval_change = prev_eval - curr_eval
+                    
+                    if verbose:
+                        logger.info(f"Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
+                    
+                    # Check if it's a blunder
+                    is_blunder, blunder_type = self.blunder_detector.is_blunder(prev_eval, curr_eval, player_color)
+                    
+                    # Create position evaluation data
+                    player_turn = "white" if player_color == chess.WHITE else "black"
                     position_data = self._create_position_data(
                         game_id=game_id,
                         move_number=move_number,
@@ -147,62 +150,60 @@ class PositionAnalyzer:
                         prev_eval=prev_eval,
                         curr_eval=curr_eval,
                         eval_change=eval_change,
-                        is_blunder=is_blunder_move,
-                        blunder_type=blunder_type if is_blunder_move else None
+                        is_blunder=is_blunder,
+                        blunder_type=blunder_type
                     )
                     position_evaluations.append(position_data)
-                
-                # Only detect blunders when it's player's turn
-                if is_blunder_move:
-                    # Calculate the absolute evaluation change for reporting
-                    absolute_eval_change = abs(eval_change)
                     
-                    logger.info(f"  Found significant blunder by {self.username}: move {move_number}, {san_move}")
-                    logger.info(f"  Position went from {prev_eval} to {curr_eval} (change: {absolute_eval_change})")
-                    
-                    # Find the best move in this position
-                    best_move = self.engine.find_best_move(prev_position_board, time_limit=time_limit)
-                    
-                    if best_move and best_move in prev_position_board.legal_moves:
-                        best_move_uci = best_move.uci()
-                        best_move_san = prev_position_board.san(best_move)
+                    # If it's a blunder, find the best move for the opponent to punish the blunder
+                    if is_blunder:
+                        # Find best move in the position AFTER the blunder
+                        punishment_move = self.engine.find_best_move(post_blunder_board, time_limit=time_limit)
                         
-                        # Make the best move on a copy of the board to evaluate
-                        test_board = prev_position_board.copy()
-                        test_board.push(best_move)
+                        # For reference, also find what would have been the best move
+                        correct_move = self.engine.find_best_move(prev_position_board, time_limit=time_limit)
+                        correct_move_uci = correct_move.uci() if correct_move else None
+                        
+                        if punishment_move:
+                            # Convert Move object to UCI string
+                            punishment_move_uci = punishment_move.uci()
                             
-                        # Evaluate what happens after the best move
-                        best_move_eval = -self.engine.evaluate_position(test_board, time_limit=time_limit)
-                            
-                        logger.info(f"  Best move would be: {best_move_san} ({best_move_uci})")
-                        logger.info(f"  Best move evaluation: {best_move_eval}")
-                            
-                        # Create blunder data
-                        player = "white" if player_color == chess.WHITE else "black"
-                        blunder = self._create_blunder_data(
-                            prev_fen, best_move_uci, player, move_number, 
-                            san_move, absolute_eval_change, game_url,
-                            blunder_type
-                        )
-                        blunders.append(blunder)
-                    else:
-                        logger.warning(f"  Best move is not valid or couldn't be determined")
+                            # Create blunder data
+                            blunder_data = self._create_blunder_data(
+                                post_blunder_fen=post_blunder_fen,  # Use position AFTER the blunder
+                                punishment_move_uci=punishment_move_uci,  # Best move to punish the blunder
+                                correct_move_uci=correct_move_uci,  # For reference only
+                                player_color=player_turn,
+                                move_number=move_number,
+                                blundered_move=san_move,
+                                eval_change=abs(eval_change),
+                                game_url=game_url,
+                                blunder_type=blunder_type
+                            )
+                            blunders.append(blunder_data)
+                            logger.info(f"Found blunder at move {move_number}.{san_move}. Eval change: {eval_change}")
+                else:
+                    # Just make the move if it's not player's turn
+                    board.push(node.move)
                 
-                # Move to the next node
+                # Move to next node
                 node = node.next()
-                moves_analyzed += 1
+                
+                # Update move number
                 if board.turn == chess.WHITE:
                     move_number += 1
+                
+                moves_analyzed += 1
                 
             except Exception as e:
-                logger.error(f"ERROR during move analysis: {e}")
+                logger.error(f"Error analyzing move {move_number}: {e}")
                 logger.error(traceback.format_exc())
-                node = node.next()  # Skip problematic move
+                # Continue with next move
+                node = node.next()
                 if board.turn == chess.WHITE:
                     move_number += 1
         
-        logger.info(f"Completed analysis, analyzed {moves_analyzed} moves, found {len(blunders)} blunders by {self.username}")
-        
+        logger.info(f"Analyzed {moves_analyzed} moves and found {len(blunders)} blunders")
         return blunders, position_evaluations
         
     def _create_position_data(self, game_id: str, move_number: int, fen: str, player_turn: str, 
@@ -239,19 +240,21 @@ class PositionAnalyzer:
             "timestamp": datetime.now().isoformat()
         }
         
-    def _create_blunder_data(self, prev_fen: str, best_move_uci: str, player_color: str, 
+    def _create_blunder_data(self, post_blunder_fen: str, punishment_move_uci: str, player_color: str, 
                            move_number: int, blundered_move: str, eval_change: int, 
-                           game_url: str, blunder_type: Optional[str] = None) -> Dict[str, Any]:
+                           game_url: str, correct_move_uci: Optional[str] = None,
+                           blunder_type: Optional[str] = None) -> Dict[str, Any]:
         """Create a structured blunder data object.
         
         Args:
-            prev_fen (str): FEN of the position before the blunder.
-            best_move_uci (str): The best move in UCI notation.
+            post_blunder_fen (str): FEN of the position after the blunder.
+            punishment_move_uci (str): The best move to punish the blunder in UCI notation.
             player_color (str): The color of the player ("white" or "black").
             move_number (int): Move number in the game.
             blundered_move (str): The blundered move in SAN notation.
             eval_change (int): The absolute change in evaluation.
             game_url (str): URL of the game.
+            correct_move_uci (Optional[str], optional): The move that should have been played instead of the blunder. For reference only.
             blunder_type (Optional[str], optional): Type of blunder. Defaults to None.
             
         Returns:
@@ -260,12 +263,17 @@ class PositionAnalyzer:
         difficulty = self.blunder_detector.calculate_difficulty(eval_change)
         difficulty_label = self.blunder_detector.get_difficulty_label(difficulty)
         
+        # Determine the opponent's color (the solver's color in the puzzle)
+        opponent_color = "black" if player_color == "white" else "white"
+        
         return {
-            "fen": prev_fen,
-            "solution": [best_move_uci],  # Use the best move as solution
-            "player_color": player_color,
+            "fen": post_blunder_fen,  # Position AFTER the blunder
+            "solution": [punishment_move_uci],  # Best move to punish the blunder
+            "player_color": opponent_color,  # The puzzle is solved from the opponent's perspective
+            "original_player_color": player_color,  # For reference
             "move_number": move_number,
             "blundered_move": blundered_move,
+            "correct_move": correct_move_uci,  # What should have been played instead (for reference)
             "eval_change": eval_change,
             "difficulty": difficulty,
             "difficulty_label": difficulty_label,

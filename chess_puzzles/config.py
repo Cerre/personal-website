@@ -20,27 +20,28 @@ MAX_GAMES = int(os.environ.get("MAX_GAMES", "15"))
 MIN_MOVES = int(os.environ.get("MIN_MOVES", "10"))
 
 # Analysis settings
-# Updated based on centipawn loss distribution analysis
-BLUNDER_THRESHOLD = int(os.environ.get("BLUNDER_THRESHOLD", "850"))
+# Updated for simplified blunder detection
+BLUNDER_THRESHOLD = int(os.environ.get("BLUNDER_THRESHOLD", "500"))
 LOG_ALL_EVALUATIONS = os.environ.get("LOG_ALL_EVALUATIONS", "TRUE").upper() == "TRUE"
 
-# Strictness levels for blunder detection - updated based on analysis
+# Keep strictness levels for backward compatibility
+# but our simplified blunder detection doesn't use these
 STRICTNESS_LEVELS = {
     "strict": {
-        "equal_range": (-300, 300),
-        "terrible_threshold": 2000
+        "equal_range": (-200, 200),
+        "terrible_threshold": 500
     },
     "standard": {
-        "equal_range": (-500, 500),
-        "terrible_threshold": 1500
+        "equal_range": (-200, 200),
+        "terrible_threshold": 500
     },
     "relaxed": {
-        "equal_range": (-850, 850),
-        "terrible_threshold": 1000
+        "equal_range": (-200, 200),
+        "terrible_threshold": 500
     },
     "all": {
-        "equal_range": (-1000, 1000),
-        "terrible_threshold": 800
+        "equal_range": (-200, 200),
+        "terrible_threshold": 500
     }
 }
 
