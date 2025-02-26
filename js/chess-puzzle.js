@@ -50,9 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     message: data.message || ''
                 };
                 
-                // Sort puzzles by difficulty (easiest first)
-                puzzles = data.puzzles.sort((a, b) => {
-                    return a.difficulty - b.difficulty;
+                // Get puzzle array and sort by timestamp (newest first)
+                puzzles = data.puzzles.slice();
+                
+                // Add timestamp sorting capability - convert timestamps to Date objects for comparison
+                puzzles.sort((a, b) => {
+                    const dateA = new Date(a.timestamp || '');
+                    const dateB = new Date(b.timestamp || '');
+                    // Sort in descending order (newest first)
+                    return dateB - dateA;
                 });
                 
                 // Filter puzzles to ensure they all meet the minimum threshold (500 centipawns)
@@ -60,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Filtered to ${puzzles.length} puzzles with eval_change >= 500 centipawns`);
                 
                 if (puzzles.length > 0) {
-                    // Show the first puzzle
+                    // Show the first puzzle (newest one)
                     displayPuzzle(0);
                     
                     // If it's a placeholder puzzle, show a note
@@ -510,14 +516,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     tryAnotherBtn.addEventListener('click', function() {
-        // Pick a random puzzle
-        const randomIndex = Math.floor(Math.random() * puzzles.length);
-        // Make sure it's different from the current one if possible
-        const newIndex = puzzles.length > 1 && randomIndex === currentPuzzleIndex 
-            ? (randomIndex + 1) % puzzles.length 
-            : randomIndex;
+        // Pick a random puzzle, excluding the first/current one
+        let randomIndex;
+        
+        // If there's more than 1 puzzle, avoid the first puzzle (latest one)
+        if (puzzles.length > 1) {
+            if (currentPuzzleIndex === 0) {
+                // If we're on the first puzzle, pick any other puzzle
+                randomIndex = Math.floor(Math.random() * (puzzles.length - 1)) + 1;
+            } else {
+                // If we're already on another puzzle, pick any random puzzle except the current one
+                randomIndex = Math.floor(Math.random() * (puzzles.length - 1));
+                if (randomIndex >= currentPuzzleIndex) randomIndex++;
+            }
+        } else {
+            // If there's only one puzzle, just show it again
+            randomIndex = 0;
+        }
             
-        displayPuzzle(newIndex);
+        displayPuzzle(randomIndex);
     });
     
     // Add a hidden debug function to force refresh

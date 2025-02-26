@@ -39,7 +39,7 @@ jobs:
           CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'lichess' }}
           STOCKFISH_PATH: '/usr/games/stockfish'
           MAX_GAMES: '15'
-          DEFAULT_TIME_LIMIT: '20.0'
+          DEFAULT_TIME_LIMIT: '1.0'
       
       - name: Commit and push changes
         run: |
