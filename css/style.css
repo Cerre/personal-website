@@ -119,7 +119,7 @@ section h2:after {
 /* Project Grid */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
 }
@@ -513,17 +513,21 @@ section h2:after {
 /* Two-column layout styles */
 .main-content-wrapper {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    grid-template-columns: 3fr 1fr;
+    gap: 3rem;
     margin-bottom: 2rem;
+    align-items: flex-start;
 }
 
 .main-content {
     width: 100%;
+    padding-right: 1rem;
 }
 
 .sidebar {
     width: 100%;
+    position: sticky;
+    top: 2rem;
 }
 
 /* Sidebar widget styles */
