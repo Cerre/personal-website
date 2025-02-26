@@ -116,7 +116,26 @@ section h2:after {
     color: #60a5fa;  /* Lighter icon color for better contrast */
 }
 
-/* Project Grid - updated for portrait layout */
+/* Main content layout */
+.main-content-wrapper {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.main-content {
+    padding-right: 1rem;
+}
+
+/* Sidebar styles */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Project grid styles */
 .project-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -192,8 +211,7 @@ section h2:after {
 
 /* Chess puzzle toggle and section styles */
 .chess-puzzle-toggle {
-    margin: 2rem 0;
-    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .toggle-button {
@@ -209,6 +227,8 @@ section h2:after {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
 }
 
 .toggle-button:hover {
@@ -238,20 +258,6 @@ section h2:after {
     gap: 1.5rem;
 }
 
-@media (min-width: 768px) {
-    .chess-puzzle-container {
-        flex-direction: row;
-    }
-    
-    .chess-board-container {
-        flex: 1;
-    }
-    
-    .chess-puzzle-info {
-        flex: 1;
-    }
-}
-
 .chess-board {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -265,83 +271,26 @@ section h2:after {
     justify-content: center;
 }
 
-.chess-board-placeholder {
-    text-align: center;
-    color: #8b4513;
-}
-
-.chess-board-placeholder i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.puzzle-details {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    margin: 1rem 0;
-}
-
-.puzzle-controls {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem 0;
-}
-
-.btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.25rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary {
-    background-color: #3b82f6;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #2563eb;
-}
-
-.btn-secondary {
-    background-color: #e9ecef;
-    color: #495057;
-}
-
-.btn-secondary:hover {
-    background-color: #dee2e6;
-}
-
-.solution-container {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    margin-top: 1rem;
-}
-
-.puzzle-footer {
-    margin-top: 1.5rem;
-    font-size: 0.875rem;
-    color: #6c757d;
-    text-align: center;
-}
-
-.api-link {
-    display: inline-block;
-    margin-top: 0.5rem;
-    color: #3b82f6;
-    text-decoration: none;
-}
-
-.api-link:hover {
-    text-decoration: underline;
-}
-
 /* Responsive adjustments */
+@media (max-width: 1200px) {
+    .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .main-content-wrapper {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
 @media (max-width: 992px) {
+    .main-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        margin-top: 2rem;
+    }
+    
     .project-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -823,4 +772,96 @@ section h2:after {
     .sidebar .chess-board-container {
         max-width: 400px;
     }
+}
+
+/* Chess board placeholder */
+.chess-board-placeholder {
+    text-align: center;
+    color: #8b4513;
+}
+
+.chess-board-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Puzzle details and controls */
+.puzzle-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+.puzzle-controls {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-secondary {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn-secondary:hover {
+    background-color: #dee2e6;
+}
+
+.solution-container {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+.puzzle-footer {
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.api-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.api-link:hover {
+    text-decoration: underline;
+}
+
+/* Additional sidebar-specific styles */
+.sidebar-widget {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.sidebar-widget h2 {
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #333;
 } 

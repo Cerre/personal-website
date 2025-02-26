@@ -1,5 +1,10 @@
 // Update copyright year
-document.getElementById('year').textContent = new Date().getFullYear();
+document.addEventListener('DOMContentLoaded', function() {
+    const yearSpan = document.getElementById('year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+});
 
 // Add smooth scrolling for navigation
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
