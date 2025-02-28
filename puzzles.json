@@ -1,6 +1,26 @@
 {
   "puzzles": [
     {
+      "fen": "6k1/4bppp/pr6/P2nQ1N1/8/1p6/2q2PPP/5RK1 w - - 0 29",
+      "pre_blunder_fen": "1r4k1/4bppp/pB6/P2nQ1N1/8/1p6/2q2PPP/5RK1 b - - 3 28",
+      "solution": [
+        "a5b6"
+      ],
+      "player_color": "white",
+      "original_player_color": "black",
+      "move_number": 28,
+      "blundered_move": "Rxb6",
+      "blundered_move_uci": "b8b6",
+      "correct_move": "b8f8",
+      "eval_change": 574,
+      "difficulty": 5,
+      "difficulty_label": "Advanced",
+      "blunder_type": "blunder",
+      "game_url": "https://lichess.org/j0Q714BQ",
+      "timestamp": "2025-02-28T03:12:17.713722",
+      "show_solution_text": false
+    },
+    {
       "fen": "r4rk1/pb2bppp/1pn2n2/2qpp3/1PP5/P3PNP1/1B2NPBP/R2Q1RK1 w - - 1 15",
       "pre_blunder_fen": "r4rk1/pb2bppp/1pnq1n2/3pp3/1PP5/P3PNP1/1B2NPBP/R2Q1RK1 b - - 0 14",
       "solution": [
@@ -12,12 +32,12 @@
       "blundered_move": "Qc5",
       "blundered_move_uci": "d6c5",
       "correct_move": "a8d8",
-      "eval_change": 675,
+      "eval_change": 671,
       "difficulty": 4,
       "difficulty_label": "Challenging",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/DUtHFY67",
-      "timestamp": "2025-02-27T03:08:59.491121",
+      "timestamp": "2025-02-28T03:13:16.100441",
       "show_solution_text": false
     },
     {
@@ -31,13 +51,13 @@
       "move_number": 38,
       "blundered_move": "Qc4+",
       "blundered_move_uci": "e4c4",
-      "correct_move": "e4e6",
-      "eval_change": 9992,
+      "correct_move": "f6e6",
+      "eval_change": 9993,
       "difficulty": 1,
       "difficulty_label": "Very Easy",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/xlYTdsTP",
-      "timestamp": "2025-02-27T03:11:19.781076",
+      "timestamp": "2025-02-28T03:15:35.963524",
       "show_solution_text": false
     },
     {
@@ -52,17 +72,17 @@
       "blundered_move": "Bf6",
       "blundered_move_uci": "e5f6",
       "correct_move": "g2g3",
-      "eval_change": 9895,
+      "eval_change": 9907,
       "difficulty": 1,
       "difficulty_label": "Very Easy",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/xIwwVheT",
-      "timestamp": "2025-02-27T03:14:54.127080",
+      "timestamp": "2025-02-28T03:19:13.540421",
       "show_solution_text": false
     }
   ],
-  "count": 3,
-  "generated_at": "2025-02-27T03:19:49.794122",
+  "count": 4,
+  "generated_at": "2025-02-28T03:20:00.443592",
   "username": "Toxima",
   "platform": "lichess"
 }
