@@ -12,12 +12,12 @@
       "blundered_move": "Rxb6",
       "blundered_move_uci": "b8b6",
       "correct_move": "b8f8",
-      "eval_change": 574,
+      "eval_change": 587,
       "difficulty": 5,
       "difficulty_label": "Advanced",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/j0Q714BQ",
-      "timestamp": "2025-02-28T03:12:17.713722",
+      "timestamp": "2025-03-01T03:15:25.472864",
       "show_solution_text": false
     },
     {
@@ -32,12 +32,12 @@
       "blundered_move": "Qc5",
       "blundered_move_uci": "d6c5",
       "correct_move": "a8d8",
-      "eval_change": 671,
+      "eval_change": 683,
       "difficulty": 4,
       "difficulty_label": "Challenging",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/DUtHFY67",
-      "timestamp": "2025-02-28T03:13:16.100441",
+      "timestamp": "2025-03-01T03:16:24.064134",
       "show_solution_text": false
     },
     {
@@ -51,13 +51,13 @@
       "move_number": 38,
       "blundered_move": "Qc4+",
       "blundered_move_uci": "e4c4",
-      "correct_move": "f6e6",
-      "eval_change": 9993,
+      "correct_move": "e4e6",
+      "eval_change": 9999,
       "difficulty": 1,
       "difficulty_label": "Very Easy",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/xlYTdsTP",
-      "timestamp": "2025-02-28T03:15:35.963524",
+      "timestamp": "2025-03-01T03:18:42.542108",
       "show_solution_text": false
     },
     {
@@ -72,17 +72,17 @@
       "blundered_move": "Bf6",
       "blundered_move_uci": "e5f6",
       "correct_move": "g2g3",
-      "eval_change": 9907,
+      "eval_change": 9891,
       "difficulty": 1,
       "difficulty_label": "Very Easy",
       "blunder_type": "blunder",
       "game_url": "https://lichess.org/xIwwVheT",
-      "timestamp": "2025-02-28T03:19:13.540421",
+      "timestamp": "2025-03-01T03:22:17.339921",
       "show_solution_text": false
     }
   ],
   "count": 4,
-  "generated_at": "2025-02-28T03:20:00.443592",
+  "generated_at": "2025-03-01T03:23:03.350871",
   "username": "Toxima",
   "platform": "lichess"
 }
