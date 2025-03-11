@@ -20,7 +20,7 @@ The website includes an interactive chess puzzle widget that displays your lates
 
 1. A GitHub Action runs daily to fetch your recent games from Chess.com or Lichess
 2. It analyzes the games to find blunders using the Stockfish chess engine
-3. The puzzles are stored in `puzzles.json` and served directly from your website
+3. The puzzles are stored in `chess_puzzles/puzzles.json` and served directly from your website
 4. Visitors can interact with the chess board to solve the puzzles
 5. No backend server is required
 
@@ -135,14 +135,14 @@ python analyze_eval_distribution.py --player-only
 ```
 
 This script will:
-1. Analyze the evaluation changes recorded in the position_evaluations.json file
+1. Analyze the evaluation changes recorded in the chess_puzzles/position_evaluations.json file
 2. Generate visualizations of the distribution of centipawn losses
 3. Provide statistical insights about the evaluation changes
 4. Generate recommended thresholds based on your games
 5. Save plots to the 'plots' directory
 
 Options:
-- `--input/-i`: Path to the position evaluations file (default: "position_evaluations.json")
+- `--input/-i`: Path to the position evaluations file (default: "chess_puzzles/position_evaluations.json")
 - `--output-dir/-o`: Directory to save output plots (default: "plots")
 - `--player-only/-p`: Analyze only moves made by the player (recommended)
 

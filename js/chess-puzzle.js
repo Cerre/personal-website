@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastMove = null; // Store the last move for animation
     
     // Path to the puzzles.json file
-    const PUZZLES_FILE = 'puzzles.json';
+    const PUZZLES_FILE = 'chess_puzzles/puzzles.json';
     
     // Load puzzles
     loadPuzzles();

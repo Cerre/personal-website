@@ -27,13 +27,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-chess.txt
+          pip install -r chess_puzzles/requirements.txt
           sudo apt-get update
           sudo apt-get install -y stockfish
           which stockfish
       
       - name: Generate puzzles
-        run: python run_chess_puzzles.py
+        run: python chess_puzzles/run_chess_puzzles.py
         env:
           CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima' }}
           CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'lichess' }}
@@ -47,12 +47,12 @@ jobs:
           git config --local user.name "github-actions[bot]"
           
           # Check if puzzles.json exists before trying to add it
-          if [ -f puzzles.json ]; then
-            git add puzzles.json
+          if [ -f chess_puzzles/puzzles.json ]; then
+            git add chess_puzzles/puzzles.json
             
             # Also add position_evaluations.json if it exists
-            if [ -f position_evaluations.json ]; then
-              git add position_evaluations.json
+            if [ -f chess_puzzles/position_evaluations.json ]; then
+              git add chess_puzzles/position_evaluations.json
             fi
             
             git diff --quiet && git diff --staged --quiet || git commit -m "Update chess puzzles [skip ci]"

@@ -7,8 +7,8 @@ from pathlib import Path
 # User settings
 USERNAME = os.environ.get("CHESS_USERNAME", "Toxima")
 PLATFORM = os.environ.get("CHESS_PLATFORM", "lichess")
-OUTPUT_FILE = os.environ.get("OUTPUT_FILE", "puzzles.json")
-EVAL_LOG_FILE = os.environ.get("EVAL_LOG_FILE", "position_evaluations.json")
+OUTPUT_FILE = os.environ.get("OUTPUT_FILE", os.path.join(os.path.dirname(__file__), "puzzles.json"))
+EVAL_LOG_FILE = os.environ.get("EVAL_LOG_FILE", os.path.join(os.path.dirname(__file__), "position_evaluations.json"))
 
 # Engine settings
 STOCKFISH_PATH = os.environ.get("STOCKFISH_PATH")
