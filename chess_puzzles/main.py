@@ -11,7 +11,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 
 import chess
 
@@ -230,6 +230,18 @@ def main():
     
     logger.info(f"Starting chess puzzle generator for {cfg['username']} on {cfg['platform']}")
     
+    # Load existing puzzles if the file exists
+    puzzle_generator = PuzzleGenerator(cfg['username'], cfg['platform'])
+    existing_data = puzzle_generator.load_existing_puzzles(cfg['output_file'])
+    
+    # Get a set of already analyzed game URLs
+    already_analyzed_games = set()
+    for puzzle in existing_data.get('puzzles', []):
+        if 'game_url' in puzzle and not puzzle.get('is_placeholder', False):
+            already_analyzed_games.add(puzzle['game_url'])
+    
+    logger.info(f"Found {len(already_analyzed_games)} previously analyzed games")
+    
     # Initialize the Stockfish engine
     engine = StockfishEngine(cfg['stockfish_path'])
     
@@ -247,16 +259,29 @@ def main():
                 # Use local PGN file
                 logger.info(f"Using local PGN file: {cfg['pgn_file']}")
                 games = find_games_in_pgn_file(cfg['pgn_file'], cfg['username'])
+                
+                # Filter games that have already been analyzed
+                games = [game for game in games if game.get('game_url') not in already_analyzed_games]
+                logger.info(f"Found {len(games)} new games to analyze in PGN file")
+                
                 all_puzzles, all_evaluations = process_games(games, cfg, engine)
             else:
                 # Fetch games from online platform
                 game_fetcher = GameFetcher(username=cfg['username'], platform=cfg['platform'])
-                games = game_fetcher.fetch_games(max_games=cfg['count'])
-                logger.info(f"Fetched {len(games)} games from {cfg['platform']}\n")
+                
+                # Fetch games, filtering out already analyzed ones
+                games = game_fetcher.fetch_games(
+                    max_games=cfg['count'],
+                    already_analyzed_games=already_analyzed_games
+                )
+                
+                logger.info(f"Fetched {len(games)} new games from {cfg['platform']} to analyze\n")
                 
                 if not games:
-                    logger.warning(f"No games found for {cfg['username']} on {cfg['platform']}")
-                    return 1
+                    logger.warning(f"No new games found for {cfg['username']} on {cfg['platform']}")
+                    # Generate the puzzles anyway to ensure the puzzle file is updated with the current timestamp
+                    puzzle_generator.generate_puzzles([], cfg['output_file'])
+                    return 0
                 
                 all_puzzles, all_evaluations = process_games(games, cfg, engine)
     
@@ -268,9 +293,7 @@ def main():
     finally:
         # Generate puzzles from found blunders
         if all_puzzles:
-            puzzle_generator = PuzzleGenerator(cfg['username'], cfg['platform'])
-            
-            # Save main puzzles file
+            # Save main puzzles file, appending to existing puzzles
             puzzle_generator.generate_puzzles(all_puzzles, cfg['output_file'])
             
             # Save additional themed puzzles
@@ -278,12 +301,14 @@ def main():
             
             # Show statistics
             stats = get_game_statistics(all_puzzles)
-            logger.info(f"\nFound {stats['count']} puzzles in total")
+            logger.info(f"\nFound {stats['count']} new puzzles")
             if stats['count'] > 0:
                 logger.info(f"Difficulty distribution: {stats['difficulty_distribution']}")
                 logger.info(f"Average evaluation change: {stats['avg_eval_change']:.1f} centipawns")
                 logger.info(f"Moves range: {stats['earliest_move']} - {stats['latest_move']}")
         else:
+            # Just save an updated file with no new puzzles added
+            puzzle_generator.generate_puzzles([], cfg['output_file'])
             logger.warning("No puzzles were found in any games")
     
     # Show total execution time

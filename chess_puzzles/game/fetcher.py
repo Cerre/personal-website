@@ -10,7 +10,7 @@ import logging
 import requests
 import chess
 import chess.pgn
-from typing import List, Dict, Any, Optional, Tuple, Union
+from typing import List, Dict, Any, Optional, Tuple, Union, Set
 
 from chess_puzzles import config
 
@@ -31,28 +31,46 @@ class GameFetcher:
         self.platform = platform.lower()
         logger.info(f"Initialized GameFetcher for {username} on {platform}")
         
-    def fetch_games(self, max_games: int = config.MAX_GAMES) -> List[Dict[str, Any]]:
+    def fetch_games(self, max_games: int = config.MAX_GAMES, 
+                   already_analyzed_games: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
         """Fetch games from the specified platform.
         
         Args:
             max_games (int, optional): Maximum number of games to fetch. Defaults to config.MAX_GAMES.
-            
+            already_analyzed_games (Optional[Set[str]], optional): Set of game URLs that have already
+                been analyzed and don't need to be fetched again.
+                
         Returns:
             List[Dict[str, Any]]: List of game data dictionaries.
             
         Raises:
             ValueError: If the platform is not supported.
         """
-        logger.info(f"Fetching up to {max_games} games for {self.username} from {self.platform}")
+        max_games_to_fetch = max(500, max_games)  # Fetch at least 500 to have a good pool to filter from
+        logger.info(f"Fetching up to {max_games_to_fetch} games for {self.username} from {self.platform}")
+        
+        already_analyzed_games = already_analyzed_games or set()
         
         if self.platform == "lichess":
-            return self.fetch_lichess_games(max_games)
+            games = self.fetch_lichess_games(max_games_to_fetch)
         elif self.platform == "chess.com":
-            return self.fetch_chess_com_games(max_games)
+            games = self.fetch_chess_com_games(max_games_to_fetch)
         else:
-            error_msg = f"Unsupported platform: {self.platform}"
-            logger.error(error_msg)
-            raise ValueError(error_msg)
+            raise ValueError(f"Unsupported platform: {self.platform}")
+        
+        # Filter out already analyzed games
+        filtered_games = []
+        for game in games:
+            game_url = game.get('game_url')
+            if game_url and game_url not in already_analyzed_games:
+                filtered_games.append(game)
+            
+            # Stop once we have the requested number of games
+            if len(filtered_games) >= max_games:
+                break
+        
+        logger.info(f"Fetched {len(games)} games, filtered to {len(filtered_games)} new games")
+        return filtered_games
             
     def fetch_lichess_games(self, max_games: int) -> List[Dict[str, Any]]:
         """Fetch games from Lichess API for the given username.

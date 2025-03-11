@@ -32,7 +32,7 @@ jobs:
           sudo apt-get install -y stockfish
           which stockfish
       
-      - name: Generate puzzles
+      - name: Generate and append puzzles
         run: python chess_puzzles/run_chess_puzzles.py
         env:
           CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima' }}
