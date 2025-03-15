@@ -1,19 +1,23 @@
-// Puzzle toggle functionality
+// Main script.js file
+
+// Initialize any event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleButton = document.getElementById('toggleChessPuzzle');
-    const chessPuzzleSection = document.getElementById('chessPuzzleSection');
-    
-    if (toggleButton && chessPuzzleSection) {
-        toggleButton.addEventListener('click', function() {
-            // Toggle active class on chess puzzle section
-            chessPuzzleSection.classList.toggle('active');
-            
-            // Update button text based on state
-            if (chessPuzzleSection.classList.contains('active')) {
-                toggleButton.innerHTML = '<i class="fas fa-chess-knight"></i> Hide Chess Puzzle Challenge';
-            } else {
-                toggleButton.innerHTML = '<i class="fas fa-chess-knight"></i> Show Chess Puzzle Challenge';
-            }
+    // Theme toggle functionality if needed
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-theme');
+            // Save preference to localStorage
+            const isDarkTheme = document.body.classList.contains('dark-theme');
+            localStorage.setItem('darkTheme', isDarkTheme);
         });
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('darkTheme');
+        if (savedTheme === 'true') {
+            document.body.classList.add('dark-theme');
+        }
     }
+    
+    // Add more initialization code as needed
 }); 

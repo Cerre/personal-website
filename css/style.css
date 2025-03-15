@@ -6,28 +6,28 @@
 }
 
 :root {
-    --primary-color: #1a56db;    /* Darker blue */
-    --secondary-color: #2563eb;  /* Original primary as secondary */
-    --dark-color: #111827;       /* Darker background */
-    --light-color: #f8fafc;      /* Keeping light color for contrast */
-    --gray-color: #4b5563;       /* Darker gray */
-    --background-color: #0f172a; /* Dark background */
-    --card-bg-color: #1e293b;    /* Darker card background */
-    --text-color: #e2e8f0;       /* Light text for dark background */
+    --primary-color: #3b82f6;
+    --secondary-color: #1d4ed8;
+    --dark-color: #1e293b;
+    --light-color: #f8fafc;
+    --background-color: #0f172a;
+    --text-color: #e2e8f0;
+    --gray-color: #94a3b8;
+    --card-bg-color: #1e293b;
+    --border-color: #334155;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--background-color);
 }
 
 .container {
-    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
 }
 
 a {
@@ -47,21 +47,38 @@ h1, h2, h3 {
 
 /* Header Styles */
 .header {
-    padding: 6rem 0 3rem;
-    background: linear-gradient(to right, #1e40af, #3b82f6);  /* Darker gradient */
-    color: white;
-    text-align: center;
+    background-color: var(--dark-color);
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.name {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
     font-weight: 700;
+    color: var(--light-color);
+    text-decoration: none;
 }
 
-.tagline {
-    font-size: 1.2rem;
-    opacity: 0.9;
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--gray-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--light-color);
 }
 
 /* Section Styles */
@@ -119,9 +136,9 @@ section h2:after {
 /* Main content layout */
 .main-content-wrapper {
     display: grid;
-    grid-template-columns: 3fr 1fr; /* Main content takes 3/4, sidebar takes 1/4 */
+    grid-template-columns: 3fr 1fr;
     gap: 2rem;
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
 .main-content {
@@ -135,199 +152,120 @@ section h2:after {
 /* Project grid styles */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-top: 1.5rem;
 }
 
 .project-card {
     background-color: var(--card-bg-color);
     border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
+    overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    color: var(--text-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .project-card:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.project-card h3 {
-    margin-top: 0;
-    margin-bottom: 1rem;
+.project-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.project-content {
+    padding: 1.25rem;
+}
+
+.project-title {
     font-size: 1.25rem;
-    color: var(--text-color);
+    margin-bottom: 0.75rem;
+    color: var(--light-color);
+}
+
+.project-description {
+    color: var(--gray-color);
+    margin-bottom: 1rem;
 }
 
 .project-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
-.tag {
-    background-color: rgba(37, 99, 235, 0.2);
+.project-tag {
+    background-color: rgba(59, 130, 246, 0.2);
     color: #93c5fd;
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
 }
 
-.project-content {
-    flex: 1;
+.project-links {
     display: flex;
-    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
-.challenge, .approach, .insights {
-    margin-bottom: 0.75rem;
-}
-
-.case-study-link {
-    display: inline-block;
-    margin-top: auto;
-    padding: 0.5rem 1rem;
-    background-color: #3b82f6;
-    color: white;
-    text-decoration: none;
+.project-link {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    padding: 0.5rem 0.75rem;
     border-radius: 0.25rem;
-    font-weight: 600;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-.case-study-link:hover {
-    background-color: #2563eb;
-}
-
-/* Chess puzzle toggle and section styles */
-.chess-puzzle-toggle {
-    margin-bottom: 1rem;
-}
-
-.toggle-button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    justify-content: center;
-}
-
-.toggle-button:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.toggle-button i {
-    font-size: 1.25rem;
-}
-
-.toggle-button.active i {
-    transform: rotate(180deg);
-}
-
-.chess-puzzle-section {
-    display: none; /* Initially hidden */
-    background-color: var(--card-bg-color);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
-}
-
-.chess-puzzle-section.active {
-    display: block;
-}
-
-.chess-puzzle-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.chess-board {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    max-width: 400px;
-    margin: 0 auto;
-    background-color: #f0d9b5;
-    border: 3px solid #8b4513;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    overflow: hidden;
+    gap: 0.25rem;
 }
 
-.chess-board-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    position: relative;
+.project-link:hover {
+    background-color: rgba(59, 130, 246, 0.3);
+    color: var(--light-color);
 }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-    .main-content-wrapper {
-        grid-template-columns: 2fr 1fr; /* Adjust ratio for medium screens */
-    }
-    
-    .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .main-content-wrapper {
-        grid-template-columns: 1fr; /* Single column on small screens */
-        gap: 1rem;
-    }
-    
-    .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .project-grid {
-        grid-template-columns: 1fr; /* Single column for projects on mobile */
-    }
+.project-link i {
+    font-size: 0.75rem;
 }
 
 /* Footer */
 .footer {
-    background-color: #0c1322;  /* Even darker for footer */
-    color: white;
+    background-color: var(--dark-color);
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border-color);
     text-align: center;
-    padding: 2rem 0;
     margin-top: 2rem;
 }
 
-/* Media queries for project grid responsiveness */
-@media (max-width: 1200px) {
-    .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.footer p {
+    color: var(--gray-color);
+    font-size: 0.875rem;
 }
 
+/* Media queries for project grid responsiveness */
 @media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-links {
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .main-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
     .project-grid {
         grid-template-columns: 1fr;
     }
@@ -411,280 +349,6 @@ section h2:after {
     .about .toggle-button {
         margin-top: 1.5rem;
     }
-}
-
-/* Chess Puzzle Styles */
-.chess-puzzle-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-top: 1rem;
-}
-
-.chess-board-container {
-    flex: 1;
-    min-width: 300px;
-    max-width: 500px;
-}
-
-.chess-board {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-color: var(--card-bg-color);
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.chess-board-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: var(--text-color);
-    opacity: 0.7;
-    text-align: center;
-}
-
-.chess-board-placeholder i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-}
-
-.chess-puzzle-info {
-    flex: 1;
-    min-width: 300px;
-    max-width: 500px;
-    padding: 1.5rem;
-    background-color: var(--card-bg-color);
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.chess-puzzle-info h3 {
-    color: #93c5fd;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.puzzle-details {
-    margin: 1.5rem 0;
-    padding: 1rem;
-    background-color: rgba(15, 23, 42, 0.5);
-    border-radius: 0.5rem;
-}
-
-.game-link {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 8px;
-    color: var(--secondary-color);
-    font-size: 0.9em;
-    text-decoration: none;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background-color: rgba(37, 99, 235, 0.1);
-    transition: all 0.2s ease;
-}
-
-.game-link:hover {
-    background-color: rgba(37, 99, 235, 0.2);
-    color: var(--light-color);
-}
-
-.game-link i {
-    margin-right: 4px;
-    font-size: 0.85em;
-}
-
-.puzzle-details p {
-    margin-bottom: 0.5rem;
-}
-
-.puzzle-details p:last-child {
-    margin-bottom: 0;
-}
-
-.puzzle-details strong {
-    color: #93c5fd;
-}
-
-.puzzle-controls {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
-}
-
-.btn {
-    padding: 0.75rem 1.25rem;
-    border: none;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.btn-secondary {
-    background-color: rgba(79, 70, 229, 0.2);
-    color: #a5b4fc;
-}
-
-.btn-secondary:hover {
-    background-color: rgba(79, 70, 229, 0.3);
-    transform: translateY(-2px);
-}
-
-.solution-container {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background-color: rgba(15, 23, 42, 0.5);
-    border-radius: 0.5rem;
-    border-left: 3px solid var(--primary-color);
-}
-
-.solution-container h4 {
-    color: #93c5fd;
-    margin-bottom: 0.75rem;
-}
-
-.puzzle-footer {
-    text-align: center;
-    margin-top: 2rem;
-    font-size: 0.9rem;
-    color: var(--gray-color);
-}
-
-.api-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.api-link:hover {
-    transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-    .chess-puzzle-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .chess-board-container,
-    .chess-puzzle-info {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .puzzle-controls {
-        flex-direction: column;
-    }
-}
-
-/* Highlight squares for move animation */
-.highlight-square {
-    box-shadow: inset 0 0 0 4px rgba(255, 215, 0, 0.8) !important; /* Brighter yellow with !important */
-    background-color: rgba(255, 255, 0, 0.3) !important; /* Light yellow background */
-    transition: all 0.3s ease !important; /* Smooth transition */
-}
-
-/* Turn indicator styling */
-#turn-indicator {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-#turn-indicator.white {
-    background-color: #f0f0f0;
-    color: #000;
-}
-
-#turn-indicator.black {
-    background-color: #333;
-    color: #fff;
-}
-
-/* Move feedback styling */
-.correct-move {
-    color: #10b981; /* Green */
-    font-weight: bold;
-}
-
-.incorrect-move {
-    color: #ef4444; /* Red */
-    font-weight: bold;
-}
-
-.board-feedback {
-    border-radius: 0.5rem;
-    animation: fadeEffect 1.5s ease-out;
-    z-index: 9999 !important; /* Ensure it's on top */
-}
-
-.board-feedback.correct {
-    box-shadow: 0 0 20px 8px rgba(16, 185, 129, 0.8) !important; /* Stronger green glow */
-}
-
-.board-feedback.incorrect {
-    box-shadow: 0 0 20px 8px rgba(239, 68, 68, 0.8) !important; /* Stronger red glow */
-}
-
-@keyframes fadeEffect {
-    0% { opacity: 0.8; }
-    100% { opacity: 0; }
-}
-
-/* Chess puzzle toggle functionality */
-.chess-puzzle-toggle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1rem 0 2rem;
-}
-
-.toggle-button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.toggle-button:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.toggle-button i {
-    transition: transform 0.3s ease;
-}
-
-.toggle-button.active i {
-    transform: rotate(180deg);
 }
 
 /* Move sidebar styles to the chess puzzle section */

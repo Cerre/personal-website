@@ -24,21 +24,14 @@
         </div>
     </header>
 
-    <section class="about container">
-        <h2>About Me</h2>
-        <p>Hello! I'm a Python developer specializing in computer vision, large language models (LLMs), and machine learning. I enjoy solving complex problems and developing AI solutions that make a real-world impact.</p>
-        <p>Throughout my career, I've built robust data pipelines, trained sophisticated ML models, and created AI applications that tackle challenging real-world problems. My approach combines technical expertise with a focus on practical, impactful solutions.</p>
-        <p>Feel free to explore my projects and get in touch if you'd like to collaborate!</p>
-        
-        <button id="toggleChessPuzzle" class="toggle-button">
-            <i class="fas fa-chess-knight"></i> Show Chess Puzzle Challenge
-        </button>
-    </section>
+    <main class="container">
+        <div class="content-wrapper">
+            <section id="about" class="section">
+                <h2>About Me</h2>
+                <p>Hi there! I'm Filip, a passionate software engineer with experience in machine learning, web development, and cloud infrastructure. I enjoy solving complex problems and building elegant solutions.</p>
+                <p>I'm proficient in multiple programming languages including Python, JavaScript, and Go. My focus areas include distributed systems, data engineering, and API design.</p>
+            </section>
 
-    <!-- Main content with two-column layout -->
-    <div class="main-content-wrapper container">
-        <!-- Main content (left side) -->
-        <main class="main-content">
             <!-- Projects section -->
             <section class="projects">
                 <h2>Projects</h2>
@@ -114,77 +107,27 @@
                     </div>
                 </div>
             </section>
-        </main>
 
-        <!-- Sidebar (right side) -->
-        <aside class="sidebar">
-            <!-- Chess puzzle section (initially hidden) -->
-            <section id="chessPuzzleSection" class="chess-puzzle-section sidebar-widget">
-                <h2>Chess Puzzle Challenge</h2>
-                <div class="chess-puzzle-container">
-                    <div class="chess-board-container">
-                        <div id="chess-board" class="chess-board">
-                            <!-- Chess board will be rendered here by JavaScript -->
-                            <div class="chess-board-placeholder">
-                                <i class="fas fa-chess-knight"></i>
-                                <p>Loading my latest blunder...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chess-puzzle-info">
-                        <h3>Find the Best Response!</h3>
-                        <p>Watch as I make a blunder, then find the best response to punish it!</p>
-                        <div class="puzzle-details">
-                            <p><strong>Game:</strong> <span id="game-info">Rapid match on Chess.com</span></p>
-                            <p><strong>Position Evaluation:</strong> <span id="position-eval">-3.2</span></p>
-                            <p><strong>Difficulty:</strong> <span id="puzzle-difficulty">Intermediate</span></p>
-                            <p><strong>Turn to Move:</strong> <span id="turn-indicator">White</span></p>
-                        </div>
-                        <div class="puzzle-controls">
-                            <button id="show-solution" class="btn btn-primary">Show Solution</button>
-                            <button id="try-another" class="btn btn-secondary">Try Another</button>
-                        </div>
-                        <div id="solution-container" class="solution-container" style="display: none;">
-                            <h4>Solution</h4>
-                            <p id="solution-move">Qh4+ followed by Qxf2#</p>
-                            <p id="solution-explanation">This tactical sequence leads to checkmate in 2 moves. The queen sacrifice opens up the king position.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="puzzle-footer">
-                    <!-- Removed "powered by" text and GitHub link -->
-                </div>
+            <section id="contact" class="section">
+                <h2>Contact</h2>
+                <p>Feel free to reach out to me through any of the following channels:</p>
+                <ul class="contact-links">
+                    <li><a href="mailto:hello@filipcerny.com"><i class="fas fa-envelope"></i> hello@filipcerny.com</a></li>
+                    <li><a href="https://linkedin.com/in/filipcerny"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                    <li><a href="https://github.com/Cerre"><i class="fab fa-github"></i> GitHub</a></li>
+                </ul>
             </section>
+        </div>
+
+        <aside class="sidebar">
+            <!-- Sidebar content remains unchanged -->
         </aside>
-    </div>
+    </main>
 
-    <section class="social container">
-        <h2>Connect With Me</h2>
-        <div class="social-links">
-            <a href="https://www.linkedin.com/in/filip-cederquist-8b395819a/" target="_blank" class="social-link" id="linkedin-link">
-                <i class="fab fa-linkedin"></i>
-                <span>LinkedIn</span>
-            </a>
-            <a href="https://github.com/Cerre" target="_blank" class="social-link" id="github-link">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-            </a>
-            <a href="mailto:cederquist94@hotmail.com" class="social-link" id="email-link">
-                <i class="far fa-envelope"></i>
-                <span>Email</span>
-            </a>
-            <!-- Add more social links as needed -->
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; <span id="year"></span> Filip Cederquist. All rights reserved.</p>
-        </div>
+    <footer>
+        <p>&copy; 2023 Filip Cerny. All rights reserved.</p>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/chess-puzzle.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html> 

@@ -49,11 +49,6 @@ chess_env/
 .pytest_cache/
 pytest.ini
 
-# Chess puzzle specific
-stockfish.tar.gz
-stockfish*.tar
-output.log
-plots/
-evaluations/
-data/
-temp_*/ 
+# Keep other entries
+
+# Removing chess puzzle specific entries 
