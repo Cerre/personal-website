@@ -45,10 +45,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-chess_env/
 .pytest_cache/
 pytest.ini
 
-# Keep other entries
-
-# Removing chess puzzle specific entries 
+# Keep other entries 
