@@ -323,3 +323,97 @@ class StockfishEngine:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Close the engine when exiting context."""
         self.close()
+
+    def get_best_move(self, fen, time_limit=None, depth=None):
+        """Get the best move in the position.
+        
+        Args:
+            fen (str): The FEN string of the board position to analyze.
+            time_limit (float, optional): Time limit in seconds. Defaults to config value.
+            depth (int, optional): Search depth. Defaults to config value.
+            
+        Returns:
+            dict: Analysis result containing bestmove and score.
+        """
+        time_limit = time_limit or self.time_limit
+        depth = depth or self.depth
+        
+        try:
+            board = chess.Board(fen)
+            
+            # Check if there are any legal moves
+            if not any(board.legal_moves):
+                logger.warning(f"No legal moves in position: {fen}")
+                return {"bestmove": None, "score": 0}
+                
+            result = self.engine.play(
+                board,
+                chess.engine.Limit(time=time_limit, depth=depth)
+            )
+            
+            if not result or not result.move:
+                logger.warning(f"Engine did not return a move for position: {fen}")
+                return {"bestmove": None, "score": 0}
+                
+            # Validate that the move is legal
+            if result.move not in board.legal_moves:
+                logger.error(f"Engine returned illegal move {result.move.uci()} for position: {fen}")
+                return {"bestmove": None, "score": 0}
+                
+            return {
+                "bestmove": result.move.uci(),
+                "score": self.analyze_position(fen, time_limit, depth).get("score", 0)
+            }
+        except Exception as e:
+            logger.error(f"Error finding best move: {e}")
+            return {"bestmove": None, "score": 0}
+            
+    def analyze_position(self, fen, time_limit=None, depth=None):
+        """Analyze a position with the Stockfish engine.
+        
+        Args:
+            fen (str): The FEN string of the board position to analyze.
+            time_limit (float, optional): Time limit in seconds. Defaults to config value.
+            depth (int, optional): Search depth. Defaults to config value.
+            
+        Returns:
+            dict: Analysis result containing score, principal variation, and depth.
+        """
+        time_limit = time_limit or self.time_limit
+        depth = depth or self.depth
+        
+        try:
+            board = chess.Board(fen)
+            
+            # Check if the position is valid
+            if board.is_valid() is False:
+                logger.warning(f"Invalid board position: {fen}")
+                return {"score": 0, "pv": [], "depth": 0}
+                
+            # Check for game end conditions
+            if board.is_game_over():
+                # Return an appropriate score
+                if board.is_checkmate():
+                    # If it's checkmate, the side to move loses
+                    winner_score = 10000 if board.turn == chess.BLACK else -10000
+                    return {"score": winner_score, "pv": [], "depth": 0, "checkmate": True}
+                # For stalemate or other draws, score is 0
+                return {"score": 0, "pv": [], "depth": 0, "draw": True}
+                
+            result = self.engine.analyse(
+                board, 
+                chess.engine.Limit(time=time_limit, depth=depth)
+            )
+            
+            score = result["score"].white().score(mate_score=10000)
+            if board.turn == chess.BLACK:
+                score = -score
+                
+            return {
+                "score": score,
+                "pv": [move.uci() for move in result.get("pv", [])],
+                "depth": result.get("depth", 0)
+            }
+        except Exception as e:
+            logger.error(f"Error analyzing position: {e}")
+            return {"score": 0, "pv": [], "depth": 0}

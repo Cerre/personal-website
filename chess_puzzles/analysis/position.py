@@ -44,173 +44,124 @@ class PositionAnalyzer:
         """
         self.blunder_detector.set_strictness(strictness)
         
-    def analyze_game(self, pgn_text: str, game_url: str, player_color: bool, 
-                   verbose: bool = False, time_limit: float = config.DEFAULT_TIME_LIMIT) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-        """Analyze a game to find blunders and generate puzzles.
+    def analyze_game(self, game: Dict[str, Any]) -> List[Dict[str, Any]]:
+        game_id = game.get("id", "")
+        game_url = game.get("url", "")
+        pgn_text = game.get("pgn", "")
         
-        Args:
-            pgn_text (str): The PGN text of the game to analyze.
-            game_url (str): URL of the game being analyzed.
-            player_color (bool): The color of the player we're analyzing for blunders (chess.WHITE or chess.BLACK).
-            verbose (bool, optional): Whether to print detailed output. Defaults to False.
-            time_limit (float, optional): Time to let engine think per position in seconds. 
-                Defaults to config.DEFAULT_TIME_LIMIT.
+        if not pgn_text or not game_id:
+            logger.warning(f"Missing PGN or game ID, skipping game")
+            return []
             
-        Returns:
-            Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]: (blunders, position_evaluations)
-        """
-        # Validate input parameters
-        if not pgn_text:
-            logger.warning(f"Empty PGN for game {game_url}")
-            return [], []
+        try:
+            # Parse PGN
+            pgn = io.StringIO(pgn_text)
+            game_obj = chess.pgn.read_game(pgn)
+            if not game_obj:
+                logger.warning(f"Failed to parse PGN, skipping game")
+                return []
             
-        if player_color is None:
-            logger.warning(f"Player color not provided for game {game_url}")
-            return [], []
-        
-        logger.info(f"Analyzing game {game_url}")
-        logger.info(f"Player color is {'WHITE' if player_color == chess.WHITE else 'BLACK'}")
-        
-        # Parse PGN
-        pgn_io = io.StringIO(pgn_text)
-        game = chess.pgn.read_game(pgn_io)
-        
-        if not game:
-            logger.warning(f"Could not parse PGN for game {game_url}")
-            return [], []
-        
-        blunders = []
-        position_evaluations = []  # Store all position evaluations
-        board = game.board()
-        
-        # Extract game ID from URL if possible
-        game_id = game_url.split('/')[-1] if game_url else "unknown_game"
-        
-        # Process each move
-        node = game.next()
-        move_number = 1
-        moves_analyzed = 0
-        
-        while node:
-            try:
-                # Only analyze when it's player's turn
-                is_player_turn = (board.turn == player_color)
+            # Determine player color - case insensitive comparison
+            player_color = None
+            white_player = game_obj.headers.get("White", "").lower()
+            black_player = game_obj.headers.get("Black", "").lower()
+            
+            if self.username.lower() == white_player:
+                player_color = chess.WHITE
+                logger.info(f"Player is WHITE in game {game_id}")
+            elif self.username.lower() == black_player:
+                player_color = chess.BLACK
+                logger.info(f"Player is BLACK in game {game_id}")
+            
+            if player_color is None:
+                logger.warning(f"Could not determine player color for game {game_id}. White: {white_player}, Black: {black_player}")
+                return []
+            
+            # Analyze positions
+            board = game_obj.board()
+            blunders = []
+            
+            # Store evaluations for each position
+            prev_eval = None
+            move_number = 0
+            is_player_turn = board.turn == player_color
+            
+            for node in game_obj.mainline():
+                move = node.move
+                move_uci = move.uci()
+                move_san = board.san(move)
                 
+                # Only analyze positions where it's the player's turn
                 if is_player_turn:
-                    # Get position before the move
-                    prev_fen = board.fen()
+                    # Store current position before making the move
+                    current_fen = board.fen()
                     
-                    # Evaluate current position 
-                    initial_eval = self.engine.evaluate_position(board, time_limit=time_limit)
-                    # Handle case when engine evaluation returns None
-                    if initial_eval is None:
-                        logger.warning(f"Engine returned None evaluation for position before move {move_number}")
-                        prev_eval = 0
-                    else:
-                        prev_eval = initial_eval
-                    
-                    # Save the board before making the move
-                    prev_position_board = board.copy()
+                    # Evaluate position before the move
+                    if prev_eval is None:
+                        result = self.engine.analyze_position(board.fen())
+                        prev_eval = result.get("score", 0)
                     
                     # Make the move
-                    move = node.move
-                    san_move = board.san(move)
-                    
-                    # Store the UCI notation of the move before making it
-                    blundered_move_uci = move.uci()
-                    
                     board.push(move)
                     
-                    # Save the position after the blunder
-                    post_blunder_fen = board.fen()
-                    post_blunder_board = board.copy()
-                    
-                    # Evaluate new position
-                    new_eval = self.engine.evaluate_position(board, time_limit=time_limit)
-                    # Handle case when engine evaluation returns None
-                    if new_eval is None:
-                        logger.warning(f"Engine returned None evaluation at move {move_number}.{san_move}")
-                        curr_eval = 0
-                    else:
-                        curr_eval = -new_eval
-                    
-                    # Calculate evaluation change
-                    eval_change = prev_eval - curr_eval
-                    
-                    if verbose:
-                        logger.info(f"Move {move_number}.{san_move} - Prev eval: {prev_eval}, Curr eval: {curr_eval}, Change: {eval_change}")
+                    # Evaluate position after the move
+                    result = self.engine.analyze_position(board.fen())
+                    curr_eval = result.get("score", 0)
                     
                     # Check if it's a blunder
-                    is_blunder, blunder_type = self.blunder_detector.is_blunder(prev_eval, curr_eval, player_color)
+                    is_blunder = self.blunder_detector.is_blunder(prev_eval, curr_eval, player_color)
                     
-                    # Create position evaluation data
-                    player_turn = "white" if player_color == chess.WHITE else "black"
-                    position_data = self._create_position_data(
-                        game_id=game_id,
-                        move_number=move_number,
-                        fen=prev_fen,
-                        player_turn=player_turn,
-                        move_san=san_move,
-                        prev_eval=prev_eval,
-                        curr_eval=curr_eval,
-                        eval_change=eval_change,
-                        is_blunder=is_blunder,
-                        blunder_type=blunder_type
-                    )
-                    position_evaluations.append(position_data)
-                    
-                    # If it's a blunder, find the best move for the opponent to punish the blunder
                     if is_blunder:
-                        # Find best move in the position AFTER the blunder
-                        punishment_move = self.engine.find_best_move(post_blunder_board, time_limit=time_limit)
+                        # Get the best move in the position before the blunder
+                        board.pop()  # Go back to position before the move
+                        best_move_result = self.engine.get_best_move(board.fen())
+                        correct_move_uci = best_move_result.get("bestmove")
                         
-                        # For reference, also find what would have been the best move
-                        correct_move = self.engine.find_best_move(prev_position_board, time_limit=time_limit)
-                        correct_move_uci = correct_move.uci() if correct_move else None
+                        # Validate that the suggested move is legal
+                        correct_move_san = ""
+                        if correct_move_uci:
+                            try:
+                                correct_move = chess.Move.from_uci(correct_move_uci)
+                                if correct_move in board.legal_moves:
+                                    correct_move_san = board.san(correct_move)
+                                else:
+                                    logger.warning(f"Move {correct_move_uci} suggested by Stockfish is not legal in position {board.fen()}")
+                            except ValueError:
+                                logger.warning(f"Invalid UCI move: {correct_move_uci}")
                         
-                        if punishment_move:
-                            # Convert Move object to UCI string
-                            punishment_move_uci = punishment_move.uci()
-                            
-                            # Create blunder data
-                            blunder_data = self._create_blunder_data(
-                                post_blunder_fen=post_blunder_fen,  # Use position AFTER the blunder
-                                pre_blunder_fen=prev_fen,          # Include position BEFORE the blunder
-                                punishment_move_uci=punishment_move_uci,  # Best move to punish the blunder
-                                correct_move_uci=correct_move_uci,  # For reference only
-                                player_color=player_turn,
-                                move_number=move_number,
-                                blundered_move=san_move,
-                                blundered_move_uci=blundered_move_uci,  # Pass the UCI notation
-                                eval_change=abs(eval_change),
-                                game_url=game_url,
-                                blunder_type=blunder_type
-                            )
-                            blunders.append(blunder_data)
-                            logger.info(f"Found blunder at move {move_number}.{san_move}. Eval change: {eval_change}")
+                        board.push(move)  # Re-apply the actual move
+                        
+                        # Create blunder data
+                        blunder_data = {
+                            "fen": current_fen,
+                            "moves": [move_uci, correct_move_uci] if correct_move_uci else [move_uci],
+                            "game_id": game_id,
+                            "game_url": game_url,
+                            "player_move": move_san,
+                            "correct_move": correct_move_san,
+                            "eval_before": prev_eval,
+                            "eval_after": curr_eval,
+                            "move_number": move_number // 2 + 1,
+                            "player_color": "white" if player_color == chess.WHITE else "black",
+                        }
+                        blunders.append(blunder_data)
+                    
+                    # Update for next move
+                    prev_eval = curr_eval
                 else:
-                    # Just make the move if it's not player's turn
-                    board.push(node.move)
+                    # Just make the move
+                    board.push(move)
+                    prev_eval = None  # Reset eval since opponent moved
                 
-                # Move to next node
-                node = node.next()
-                
-                # Update move number
-                if board.turn == chess.WHITE:
-                    move_number += 1
-                
-                moves_analyzed += 1
-                
-            except Exception as e:
-                logger.error(f"Error analyzing move {move_number}: {e}")
-                logger.error(traceback.format_exc())
-                # Continue with next move
-                node = node.next()
-                if board.turn == chess.WHITE:
-                    move_number += 1
-        
-        logger.info(f"Analyzed {moves_analyzed} moves and found {len(blunders)} blunders")
-        return blunders, position_evaluations
+                # Update turn
+                move_number += 1
+                is_player_turn = board.turn == player_color
+            
+            return blunders
+            
+        except Exception as e:
+            logger.exception(f"Error analyzing game {game_id}: {e}")
+            return []
         
     def _create_position_data(self, game_id: str, move_number: int, fen: str, player_turn: str, 
                             move_san: str, prev_eval: int, curr_eval: int, eval_change: int, 
