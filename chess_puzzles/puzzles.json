@@ -122,7 +122,8 @@
     }
   ],
   "count": 6,
-  "generated_at": "2025-03-11T03:22:03.618323",
+  "generated_at": "2025-03-15T10:01:33.780796",
   "username": "Toxima",
-  "platform": "lichess"
+  "platform": "lichess",
+  "is_placeholder": false
 }
