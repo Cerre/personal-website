@@ -33,7 +33,9 @@ jobs:
           which stockfish
       
       - name: Generate and append puzzles
-        run: python chess_puzzles/run_chess_puzzles.py
+        run: |
+          cd chess_puzzles
+          python run_chess_puzzles.py
         env:
           CHESS_USERNAME: ${{ secrets.CHESS_USERNAME || 'Toxima' }}
           CHESS_PLATFORM: ${{ secrets.CHESS_PLATFORM || 'lichess' }}
