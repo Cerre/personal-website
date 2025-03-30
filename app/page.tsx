@@ -33,7 +33,9 @@ const projects = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Hero section with image and summary */}
+      <h1>Test Page</h1>
+      {/*
+      {/* Hero section with image and summary * /}
       <section className="flex flex-col items-center justify-center py-20 px-4 md:px-6 lg:px-8">
         <div className="relative h-48 w-48 mb-8 rounded-full overflow-hidden border-4 border-primary">
           <Image
@@ -70,7 +72,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Projects section */}
+      {/* Projects section * /}
       <section id="projects" className="py-20 px-4 md:px-6 lg:px-8 bg-accent/5">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
@@ -84,6 +86,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
     </main>
   )
 }
