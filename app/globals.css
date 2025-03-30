@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 10%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 20% 13%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 20% 13%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 142 70% 50%;
+    --primary-foreground: 220 20% 10%;
+
+    --secondary: 160 50% 20%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 220 20% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 160 50% 20%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 142 70% 50%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 220 20% 10%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 20% 13%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 20% 13%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 142 70% 50%;
+    --primary-foreground: 220 20% 10%;
+
+    --secondary: 160 50% 20%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 220 20% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 160 50% 20%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 142 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.prose {
+  @apply max-w-none;
+}
+
+.prose p {
+  @apply mb-4 text-muted-foreground;
+}
+
+.prose-green {
+  @apply prose-a:text-primary prose-a:no-underline hover:prose-a:text-primary/80;
+}
+
