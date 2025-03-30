@@ -5,28 +5,22 @@ import { ProjectCard } from "@/components/project-card"
 // Sample project data - you would replace this with your actual projects
 const projects = [
   {
-    id: "project-1",
-    title: "Portfolio Website",
-    summary: "A responsive portfolio website built with Next.js and Tailwind CSS.",
-    tags: ["Next.js", "React", "Tailwind CSS"],
+    id: "finger-counting-dart",
+    title: "AI Finger Counting & KillerDart Backend",
+    summary: "Developed a finger counting system using MediaPipe and XGBoost, alongside a backend server for the KillerDart application.",
+    tags: ["MediaPipe", "XGBoost", "Python", "Backend", "Computer Vision"],
   },
   {
-    id: "project-2",
-    title: "E-commerce Platform",
-    summary: "A full-stack e-commerce solution with payment processing and inventory management.",
-    tags: ["TypeScript", "Node.js", "MongoDB"],
+    id: "rag-sport-commentators",
+    title: "RAG Search for Sport Commentators",
+    summary: "Built a Retrieval-Augmented Generation (RAG) system to search and retrieve information about sport commentators.",
+    tags: ["RAG", "LLM", "NLP", "Search", "AI"],
   },
   {
-    id: "project-3",
-    title: "Mobile Fitness App",
-    summary: "A cross-platform mobile application for tracking workouts and nutrition.",
-    tags: ["React Native", "Firebase", "Redux"],
-  },
-  {
-    id: "project-4",
-    title: "AI Content Generator",
-    summary: "An AI-powered tool that generates marketing copy and social media content.",
-    tags: ["Python", "TensorFlow", "NLP"],
+    id: "ai-agent-website-builder",
+    title: "AI Agent Personal Website Builder",
+    summary: "Leveraged AI agents to automate the process of building and deploying this personal website.",
+    tags: ["AI Agents", "Automation", "Web Development", "Next.js", "Vercel"],
   },
 ]
 
