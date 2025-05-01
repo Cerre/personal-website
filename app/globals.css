@@ -87,3 +87,48 @@
   @apply prose-a:text-primary prose-a:no-underline hover:prose-a:text-primary/80;
 }
 
+/* Chess component specific styles */
+.chess-dialog {
+  z-index: 100;
+}
+
+/* Chess piece dragging styles */
+.chess-piece-dragging {
+  z-index: 1100 !important;
+  pointer-events: none !important;
+}
+
+/* Make sure drag layer has proper z-index */
+[data-square] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Chess board container */
+[data-boardid] {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Ensure pieces are visible during drag */
+[data-piece] {
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Custom styles for Chess Puzzle */
+.chessboard-container {
+  position: relative; /* Establish stacking context */
+}
+
+/* Target pieces within react-chessboard, assuming they might have a structure like this */
+/* Adjust selector if needed based on actual rendered output */
+.chessboard-container > div[data-boardid] > div[class*="piece-"] {
+  z-index: 10; /* Try forcing pieces above squares */
+}
+
+/* You might need to inspect the actual rendered HTML by react-chessboard */
+/* and adjust the selector above to accurately target the piece elements. */
+/* Common patterns might involve classes like .piece, .wp, .bn, etc. */
+/* or data attributes. */
+
